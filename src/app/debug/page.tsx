@@ -1,16 +1,14 @@
-'use client';
+"use client";
 
-import { Section, Cell, Image, List } from '@telegram-apps/telegram-ui';
-import { useTranslations } from 'next-intl';
+import { Section, Cell, Image, List } from "@telegram-apps/telegram-ui";
+import { useTranslations } from "next-intl";
 
-import { Link } from '@/components/Link/Link';
-import { LocaleSwitcher } from '@/components/LocaleSwitcher/LocaleSwitcher';
-import { Page } from '@/components/Page';
-
-import tonSvg from './_assets/ton.svg';
+import { Link } from "@/components/Link/Link";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher/LocaleSwitcher";
+import { Page } from "@/components/Page";
 
 export default function Home() {
-  const t = useTranslations('i18n');
+  const t = useTranslations("i18n");
 
   return (
     <Page back={false}>
@@ -18,21 +16,7 @@ export default function Home() {
         <Section
           header="Features"
           footer="You can use these pages to learn more about features, provided by Telegram Mini Apps and other useful projects"
-        >
-          <Link href="/ton-connect">
-            <Cell
-              before={
-                <Image
-                  src={tonSvg.src}
-                  style={{ backgroundColor: '#007AFF' }}
-                />
-              }
-              subtitle="Connect your TON wallet"
-            >
-              TON Connect
-            </Cell>
-          </Link>
-        </Section>
+        ></Section>
         <Section
           header="Application Launch Data"
           footer="These pages help developer to learn more about current launch information"
@@ -53,8 +37,8 @@ export default function Home() {
             </Cell>
           </Link>
         </Section>
-        <Section header={t('header')} footer={t('footer')}>
-          <LocaleSwitcher/>
+        <Section header={t("header")} footer={t("footer")}>
+          <LocaleSwitcher />
         </Section>
       </List>
     </Page>
