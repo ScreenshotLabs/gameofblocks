@@ -1,13 +1,20 @@
+import { Calldata, RawArgs } from "starknet";
+
+import { StarknetNetwork } from "./starknet";
+
 export interface KeyPair {
   publicKey: string;
   privateKey: string;
 }
 
-export interface GaslessConfig {
-  apiKey: string;
-  baseUrl: string;
+export interface TransactionConfig {
+  protocol?: string;
 }
 
-export interface TransactionConfig extends GaslessConfig {
-  protocol?: string;
+export interface GaslessCallData {
+  accountAddress: string;
+  accountPrivateKey: string;
+  accountPublicKey: string;
+  entrypoint: string;
+  calldata?: RawArgs | Calldata;
 }
