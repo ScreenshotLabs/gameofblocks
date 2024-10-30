@@ -10,8 +10,10 @@ export default function Home() {
 
   return (
     <Page back={false}>
-      <ClickButton />
-      <PaymentButton />
+      <div className="flex flex-col gap-4 p-10">
+        <ClickButton />
+        <PaymentButton />
+      </div>
     </Page>
   );
 }
