@@ -2,6 +2,7 @@
 
 import ClickButton from "@/components/ClickButton";
 import { Page } from "@/components/Page";
+import PaymentButton from "@/components/PaymentButton";
 import { useTranslations } from "next-intl";
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
   return (
     <Page back={false}>
       <ClickButton />
+      <PaymentButton />
     </Page>
   );
 }
