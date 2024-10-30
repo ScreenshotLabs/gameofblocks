@@ -24,7 +24,7 @@
   "devDependencies": {
     "@turbo/gen": "^2.0.6",
     "prettier": "catalog:",
-    "turbo": "^2.0.6",
+    "turbo": "^2.2.3",
     "typescript": "catalog:"
   }
 }
