@@ -1,6 +1,4 @@
-import { Calldata, RawArgs } from "starknet";
-
-import { StarknetNetwork } from "./starknet";
+import type { Calldata, RawArgs } from "starknet";
 
 export interface KeyPair {
   publicKey: string;

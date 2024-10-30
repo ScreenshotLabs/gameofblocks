@@ -1,9 +1,11 @@
 "use client";
 
-import React, { createContext, ReactNode } from "react";
+import type { StarknetNetwork } from "@/types/starknet";
+import type { ReactNode } from "react";
+import React, { createContext } from "react";
+
 import { GaslessService } from "../lib/gasless";
 import { StarknetProvider } from "../lib/starknet";
-import { StarknetNetwork } from "@/types/starknet";
 
 export const GaslessServiceContext = createContext<GaslessService | null>(null);
 
@@ -16,7 +18,7 @@ export const GaslessServiceProvider = ({
 }) => {
   const gaslessService = new GaslessService(
     StarknetProvider.getInstance(),
-    network
+    network,
   );
 
   return (

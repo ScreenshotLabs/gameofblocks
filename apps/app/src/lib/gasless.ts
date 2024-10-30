@@ -1,11 +1,12 @@
+import type { StarknetNetwork } from "@/types/starknet";
 import {
-  fetchGaslessStatus,
-  fetchGasTokenPrices,
+  BASE_URL,
+  DeploymentData,
   fetchAccountCompatibility,
   fetchAccountsRewards,
-  BASE_URL,
+  fetchGaslessStatus,
+  fetchGasTokenPrices,
   SEPOLIA_BASE_URL,
-  DeploymentData,
 } from "@avnu/gasless-sdk";
 import {
   Account,
@@ -16,7 +17,6 @@ import {
   transaction,
   TypedData,
 } from "starknet";
-import { StarknetNetwork } from "@/types/starknet";
 
 /**
  * Service class for interacting with the gasless service.
@@ -31,7 +31,7 @@ export class GaslessService {
    */
   constructor(
     private readonly provider: RpcProvider,
-    network: StarknetNetwork
+    network: StarknetNetwork,
   ) {
     this.network = network;
   }
@@ -118,9 +118,8 @@ export class GaslessService {
    */
   async estimateCalls(accountAddress: string, calls: Call[]) {
     try {
-      const contractVersion = await this.provider.getContractVersion(
-        accountAddress
-      );
+      const contractVersion =
+        await this.provider.getContractVersion(accountAddress);
       const nonce = await this.provider.getNonceForAddress(accountAddress);
       const details = stark.v3Details({ skipValidate: true });
 
@@ -140,7 +139,7 @@ export class GaslessService {
         invocation,
         invocationWithDetails,
         "pending" as BlockIdentifier,
-        true
+        true,
       );
     } catch (error) {
       console.error("Failed to estimate gas cost:", error);
@@ -185,7 +184,7 @@ export class GaslessService {
   async getExecutionTransactionData(
     accountAddress: string,
     accountPrivateKey: string,
-    typedData: TypedData
+    typedData: TypedData,
   ) {
     const account = this.getAccount(accountAddress, accountPrivateKey);
     const signature = await account.signMessage(typedData);
