@@ -1,11 +1,11 @@
 import {
-  backButton,
-  viewport,
-  themeParams,
-  miniApp,
-  initData,
   $debug,
+  backButton,
+  initData,
   init as initSDK,
+  miniApp,
+  themeParams,
+  viewport,
 } from "@telegram-apps/sdk-react";
 
 /**
@@ -29,7 +29,7 @@ export function init(debug: boolean): void {
   });
 
   // Define components-related CSS variables.
-  viewport.bindCssVars();
+  // viewport.bindCssVars();
   miniApp.bindCssVars();
   themeParams.bindCssVars();
 

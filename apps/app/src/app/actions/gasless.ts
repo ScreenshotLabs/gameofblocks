@@ -1,14 +1,15 @@
 "use server";
 
-import { StarknetNetwork } from "@/types/starknet";
+import type { StarknetNetwork } from "@/types/starknet";
+import type { DeploymentData } from "@avnu/gasless-sdk";
+import type { Call } from "starknet";
 import {
   BASE_URL,
-  DeploymentData,
   fetchBuildTypedData,
   fetchExecuteTransaction,
   SEPOLIA_BASE_URL,
 } from "@avnu/gasless-sdk";
-import { Call, ec } from "starknet";
+import { ec } from "starknet";
 
 export async function buildTypedData(params: {
   accountAddress: string;
@@ -26,7 +27,7 @@ export async function buildTypedData(params: {
       apiKey: process.env.AVNU_API_KEY,
       baseUrl: params.network === "sepolia" ? SEPOLIA_BASE_URL : BASE_URL,
     },
-    params.accountClassHash
+    params.accountClassHash,
   );
 
   return buildTypedData;
@@ -42,7 +43,7 @@ export async function executeTransaction(data: {
 }) {
   const signature = new ec.starkCurve.Signature(
     BigInt(data.signatureR),
-    BigInt(data.signatureS)
+    BigInt(data.signatureS),
   );
 
   try {
@@ -54,7 +55,7 @@ export async function executeTransaction(data: {
         apiKey: process.env.AVNU_API_KEY,
         baseUrl: data.network === "sepolia" ? SEPOLIA_BASE_URL : BASE_URL,
       },
-      data.deploymentData
+      data.deploymentData,
     );
   } catch (error) {
     console.error("Failed to execute transaction:", error);

@@ -1,8 +1,8 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Page } from "@/components/Page";
 import ClickButton from "@/components/ClickButton";
+import { Page } from "@/components/Page";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const t = useTranslations("i18n");

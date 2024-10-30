@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext } from "react";
-import { ARGENT_ACCOUNT_CLASSHASH, CONTRACT_ADDRESS } from "@/core/constants";
-import { GaslessServiceContext } from "@/components/GaslessServiceContext";
-import { Call, WeierstrassSignatureType } from "starknet";
+import type { Call, WeierstrassSignatureType } from "starknet";
+import { useContext, useEffect, useState } from "react";
 import { buildTypedData, executeTransaction } from "@/app/actions/gasless";
+import { GaslessServiceContext } from "@/components/GaslessServiceContext";
+import { ARGENT_ACCOUNT_CLASSHASH, CONTRACT_ADDRESS } from "@/core/constants";
 
 interface GaslessServiceParams {
   address?: string;
@@ -33,7 +33,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
       }
     };
 
-    checkServiceStatusAsync();
+    void checkServiceStatusAsync();
   }, [gaslessService]);
 
   async function incrementScore() {
@@ -73,12 +73,12 @@ export const useGaslessService = (params: GaslessServiceParams) => {
         await gaslessService.getExecutionTransactionData(
           address,
           privateKey,
-          typedData
+          typedData,
         );
 
       const deploymentData = await gaslessService.getDeploymentData(
         publicKey,
-        ARGENT_ACCOUNT_CLASSHASH
+        ARGENT_ACCOUNT_CLASSHASH,
       );
 
       const signature =
