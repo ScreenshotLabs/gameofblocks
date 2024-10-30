@@ -3,6 +3,7 @@
 import type { StarknetNetwork } from "@/types/starknet";
 import type { DeploymentData } from "@avnu/gasless-sdk";
 import type { Call } from "starknet";
+import { env } from "@/env";
 import {
   BASE_URL,
   fetchBuildTypedData,
@@ -24,7 +25,7 @@ export async function buildTypedData(params: {
     params.gasTokenAddress,
     undefined,
     {
-      apiKey: process.env.AVNU_API_KEY,
+      apiKey: env.AVNU_API_KEY,
       baseUrl: params.network === "sepolia" ? SEPOLIA_BASE_URL : BASE_URL,
     },
     params.accountClassHash,
@@ -52,7 +53,7 @@ export async function executeTransaction(data: {
       data.typedData,
       signature,
       {
-        apiKey: process.env.AVNU_API_KEY,
+        apiKey: env.AVNU_API_KEY,
         baseUrl: data.network === "sepolia" ? SEPOLIA_BASE_URL : BASE_URL,
       },
       data.deploymentData,
