@@ -17,6 +17,7 @@ export const env = createEnv({
   server: {
     TELEGRAM_BOT_TOKEN: z.string(),
     AVNU_API_KEY: z.string(),
+    WEBHOOK_SECRET: z.string(),
   },
 
   /**
