@@ -1,10 +1,11 @@
 "use client";
 
-import { useGaslessService } from "@/hooks/useGaslessService";
-import { Button } from "./ui/button";
 import { startTransition } from "react";
-import useAccount from "@/hooks/useAccount";
 import Link from "next/link";
+import useAccount from "@/hooks/useAccount";
+import { useGaslessService } from "@/hooks/useGaslessService";
+
+import { Button } from "./ui/button";
 
 export default function ClickButton() {
   const { account, privateKey, publicKey, classHash } = useAccount();
@@ -30,7 +31,7 @@ export default function ClickButton() {
   }
 
   return (
-    <div className="p-10">
+    <div>
       {error && <div>Error: {error}</div>}
       <div>AVNU service is working: {isServiceWorking ? "✅" : "❌"}</div>
       <div>Account ClassHash: {classHash}</div>
@@ -41,13 +42,13 @@ export default function ClickButton() {
         <Button
           onClick={handleIncrementScore}
           disabled={!account?.address}
-          className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+          className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
         >
           Increment Score
         </Button>
       </div>
 
-      <div className="border p-4 mt-4">
+      <div className="mt-4 border p-4">
         <h2 className="text-xl">Transactions</h2>
         <div>
           {transactions.map((transaction, index) => (

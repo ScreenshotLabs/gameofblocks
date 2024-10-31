@@ -1,0 +1,20 @@
+{
+  "name": "@gameofblocks/bot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "grammy": "^1.27.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}
