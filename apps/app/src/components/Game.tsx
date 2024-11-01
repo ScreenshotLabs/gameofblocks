@@ -5,9 +5,9 @@ import Link from "next/link";
 import useAccount from "@/hooks/useAccount";
 import { useGaslessService } from "@/hooks/useGaslessService";
 
-import { Button } from "./ui/button";
+import InteractiveZone from "./InteractiveZone";
 
-export default function ClickButton() {
+export default function Game() {
   const { account, privateKey, publicKey, classHash } = useAccount();
   const { isServiceWorking, error, incrementScore, transactions, network } =
     useGaslessService({
@@ -33,12 +33,13 @@ export default function ClickButton() {
   return (
     <div>
       {error && <div>Error: {error}</div>}
-      <div>AVNU service is working: {isServiceWorking ? "✅" : "❌"}</div>
+      {/*   <div>AVNU service is working: {isServiceWorking ? "✅" : "❌"}</div>
       <div>Account ClassHash: {classHash}</div>
       <div>Account Address: {account?.address}</div>
       <div>Private Key: {privateKey}</div>
-      <div>Public Key: {publicKey}</div>
-      <div className="mt-4">
+      <div>Public Key: {publicKey}</div> */}
+
+      {/*  <div className="mt-4">
         <Button
           onClick={handleIncrementScore}
           disabled={!account?.address}
@@ -46,7 +47,12 @@ export default function ClickButton() {
         >
           Increment Score
         </Button>
-      </div>
+      </div> */}
+
+      <InteractiveZone
+        className="h-[400px] bg-red-500"
+        onInteraction={handleIncrementScore}
+      />
 
       <div className="mt-4 border p-4">
         <h2 className="text-xl">Transactions</h2>

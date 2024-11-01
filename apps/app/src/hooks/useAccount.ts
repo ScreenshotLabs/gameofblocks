@@ -1,7 +1,7 @@
+import { useContext, useEffect, useMemo, useState } from "react";
 import { GaslessServiceContext } from "@/components/GaslessServiceContext";
 import { ARGENT_ACCOUNT_CLASSHASH } from "@/core/constants";
 import { generateKeyPair, getArgentAccountAddress } from "@/lib/account";
-import { useMemo, useState, useEffect, useContext } from "react";
 
 export default function useAccount() {
   const gaslessService = useContext(GaslessServiceContext);
@@ -22,6 +22,8 @@ export default function useAccount() {
   };
 
   const savePrivateKeyToTelegram = async (encryptedPrivateKey: string) => {
+    // ...
+
     // Placeholder for actual Telegram API call to save private key
     console.log("Saving private key to Telegram:", encryptedPrivateKey); // This should be replaced with actual Telegram API call
   };
@@ -56,7 +58,7 @@ export default function useAccount() {
 
     const accountAddress = getArgentAccountAddress(
       keyPair.publicKey,
-      ARGENT_ACCOUNT_CLASSHASH
+      ARGENT_ACCOUNT_CLASSHASH,
     );
 
     return gaslessService.getAccount(accountAddress, keyPair.privateKey);
