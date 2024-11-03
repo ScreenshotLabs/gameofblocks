@@ -1,29 +1,31 @@
 "use client";
 
-import { startTransition } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import useAccount from "@/hooks/useAccount";
 import { useGaslessService } from "@/hooks/useGaslessService";
 
+import GameHeader from "./GameHeader";
 import InteractiveZone from "./InteractiveZone";
+import TopBar from "./TopBar";
 
 export default function Game() {
-  const { account, privateKey, publicKey, classHash } = useAccount();
-  const { isServiceWorking, error, incrementScore, transactions, network } =
-    useGaslessService({
-      address: account?.address,
-      publicKey,
-      privateKey,
-    });
+  const [life, setLife] = useState<number>(1000);
+  const { account, privateKey, publicKey } = useAccount();
+  const { isServiceWorking } = useGaslessService({
+    address: account?.address,
+    publicKey,
+    privateKey,
+  });
 
-  const handleIncrementScore = () => {
-    startTransition(async () => {
+  const handleAttack = () => {
+    setLife((prevValue) => prevValue - 1);
+    /*   startTransition(async () => {
       try {
         await incrementScore();
       } catch (error) {
         console.error("Failed to increment score:", error);
       }
-    });
+    }); */
   };
 
   if (!isServiceWorking) {
@@ -31,46 +33,17 @@ export default function Game() {
   }
 
   return (
-    <div>
-      {error && <div>Error: {error}</div>}
-      {/*   <div>AVNU service is working: {isServiceWorking ? "✅" : "❌"}</div>
-      <div>Account ClassHash: {classHash}</div>
-      <div>Account Address: {account?.address}</div>
-      <div>Private Key: {privateKey}</div>
-      <div>Public Key: {publicKey}</div> */}
-
-      {/*  <div className="mt-4">
-        <Button
-          onClick={handleIncrementScore}
-          disabled={!account?.address}
-          className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+    <div className="h-full bg-[#0A132A]">
+      <TopBar />
+      <GameHeader />
+      <div className="px-14 py-10 text-[#DAE6FF]">
+        <div className="mb-2 text-center font-bold">TEST</div>
+        <InteractiveZone
+          className="h-[400px] bg-red-500"
+          onInteraction={handleAttack}
         >
-          Increment Score
-        </Button>
-      </div> */}
-
-      <InteractiveZone
-        className="h-[400px] bg-red-500"
-        onInteraction={handleIncrementScore}
-      />
-
-      <div className="mt-4 border p-4">
-        <h2 className="text-xl">Transactions</h2>
-        <div>
-          {transactions.map((transaction, index) => (
-            <div key={index}>
-              <Link
-                target="_blank"
-                href={`https://${
-                  network === "sepolia" ? "sepolia." : ""
-                }starkscan.co/tx/${transaction}`}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                {transaction}
-              </Link>
-            </div>
-          ))}
-        </div>
+          {life} / 1000
+        </InteractiveZone>
       </div>
     </div>
   );

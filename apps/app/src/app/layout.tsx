@@ -9,6 +9,8 @@ import "@telegram-apps/telegram-ui/dist/styles.css";
 import "normalize.css/normalize.css";
 import "./_assets/globals.css";
 
+import Image from "next/image";
+
 export const metadata: Metadata = {
   title: "Your Application Title Goes Here",
   description: "Your application description goes here",
