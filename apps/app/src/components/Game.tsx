@@ -8,8 +8,11 @@ import GameHeader from "./GameHeader";
 import InteractiveZone from "./InteractiveZone";
 import TopBar from "./TopBar";
 
+const MONSTER_LIFE = 1000;
+const MONTER_NAME = "PEPE THE MAGNIFICENT";
+
 export default function Game() {
-  const [life, setLife] = useState<number>(1000);
+  const [life, setLife] = useState<number>(MONSTER_LIFE);
   const { account, privateKey, publicKey } = useAccount();
   const { isServiceWorking } = useGaslessService({
     address: account?.address,
@@ -19,13 +22,6 @@ export default function Game() {
 
   const handleAttack = () => {
     setLife((prevValue) => prevValue - 1);
-    /*   startTransition(async () => {
-      try {
-        await incrementScore();
-      } catch (error) {
-        console.error("Failed to increment score:", error);
-      }
-    }); */
   };
 
   if (!isServiceWorking) {
@@ -37,13 +33,12 @@ export default function Game() {
       <TopBar />
       <GameHeader />
       <div className="px-14 py-10 text-[#DAE6FF]">
-        <div className="mb-2 text-center font-bold">TEST</div>
+        <div className="mb-2 text-center font-bold">{MONTER_NAME}</div>
+        <div className="text-center">{`${life} / ${MONSTER_LIFE}`}</div>
         <InteractiveZone
-          className="h-[400px] bg-red-500"
+          className="h-[400px] border-2 border-red-500"
           onInteraction={handleAttack}
-        >
-          {life} / 1000
-        </InteractiveZone>
+        />
       </div>
     </div>
   );

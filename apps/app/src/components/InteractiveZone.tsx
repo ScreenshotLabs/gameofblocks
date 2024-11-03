@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMultiInteraction } from "@/hooks/useMultiInteraction";
 
 interface AnimatedElement {
@@ -37,8 +37,9 @@ export default function InteractiveZone({
     },
   );
 
-  // Cleanup expired elements
-  useEffect(() => {
+  // TODO: remove theses elements
+
+  /*   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
       setElements((prev) =>
@@ -47,7 +48,7 @@ export default function InteractiveZone({
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); */
 
   return (
     <>
@@ -70,7 +71,7 @@ export default function InteractiveZone({
               left: element.x - 16,
               top: element.y - 16,
             }}
-          ></div>
+          />
         ))}
       </div>
     </>

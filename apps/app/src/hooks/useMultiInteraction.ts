@@ -2,8 +2,7 @@ import { useCallback, useState } from "react";
 
 interface TouchPoint {
   id: number;
-  x: number;
-  y: number;
+  position: { x: number; y: number };
 }
 
 interface InteractionState {
@@ -14,8 +13,8 @@ interface InteractionState {
 type InteractionCallback = (
   count: number,
   type: "touch" | "click",
-  x: number,
-  y: number,
+  interactionX: number,
+  interactionY: number,
 ) => void;
 
 export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
@@ -28,11 +27,13 @@ export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
     (e: React.TouchEvent) => {
       e.preventDefault();
 
-      // Convert all active touches (not just the new ones) to TouchPoints
+      // Convertir tous les touches actifs avec positions client et page
       const allTouchPoints = Array.from(e.touches).map((touch) => ({
         id: touch.identifier,
-        x: touch.clientX,
-        y: touch.clientY,
+        position: {
+          x: touch.screenX,
+          y: touch.screenY,
+        },
       }));
 
       setInteractionState({
@@ -40,9 +41,19 @@ export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
         isMultiTouch: allTouchPoints.length >= 2,
       });
 
-      // Trigger onInteraction for ALL active touches when a new touch starts
+      // Créer un tableau de positions pour toutes les touches actives
+      /*   const positions: Position[] = allTouchPoints.map((point) => ({
+        client: point.client,
+        page: point.page,
+      }));
+ */
       allTouchPoints.forEach((point) => {
-        onInteraction?.(e.touches.length, "touch", point.x, point.y);
+        onInteraction?.(
+          e.touches.length,
+          "touch",
+          point.position.x,
+          point.position.y,
+        );
       });
     },
     [onInteraction],
@@ -51,36 +62,29 @@ export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
 
-    setInteractionState((prev) => {
-      const updatedPoints = prev.touchPoints.map((point) => {
-        const touch = Array.from(e.touches).find(
-          (t) => t.identifier === point.id,
-        );
-        if (touch) {
-          return {
-            ...point,
-            x: touch.clientX,
-            y: touch.clientY,
-          };
-        }
-        return point;
-      });
+    const updatedPoints = Array.from(e.touches).map((touch) => ({
+      id: touch.identifier,
+      position: {
+        x: touch.screenX,
+        y: touch.screenY,
+      },
+    }));
 
-      return {
-        touchPoints: updatedPoints,
-        isMultiTouch: updatedPoints.length >= 2,
-      };
+    setInteractionState({
+      touchPoints: updatedPoints,
+      isMultiTouch: updatedPoints.length >= 2,
     });
   }, []);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
 
-    // Use remaining touches to update state
     const remainingTouchPoints = Array.from(e.touches).map((touch) => ({
       id: touch.identifier,
-      x: touch.clientX,
-      y: touch.clientY,
+      position: {
+        x: touch.screenX,
+        y: touch.clientY,
+      },
     }));
 
     setInteractionState({
@@ -91,7 +95,7 @@ export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      onInteraction?.(1, "click", e.clientX, e.clientY);
+      onInteraction?.(1, "click", e.pageX, e.pageY);
     },
     [onInteraction],
   );
