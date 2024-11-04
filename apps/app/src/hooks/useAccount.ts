@@ -1,7 +1,8 @@
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { GaslessServiceContext } from "@/components/GaslessServiceContext";
 import { ARGENT_ACCOUNT_CLASSHASH } from "@/core/constants";
 import { generateKeyPair, getArgentAccountAddress } from "@/lib/account";
-import { useMemo, useState, useEffect, useContext } from "react";
+import { ec } from "starknet";
 
 export default function useAccount() {
   const gaslessService = useContext(GaslessServiceContext);
@@ -22,32 +23,41 @@ export default function useAccount() {
   };
 
   const savePrivateKeyToTelegram = async (encryptedPrivateKey: string) => {
+    // ...
+
     // Placeholder for actual Telegram API call to save private key
     console.log("Saving private key to Telegram:", encryptedPrivateKey); // This should be replaced with actual Telegram API call
   };
 
-  const retrieveExistingPrivateKey = async (): Promise<string | undefined> => {
-    // Placeholder for actual Telegram API call to retrieve private key
-    return undefined; // This should be replaced with actual Telegram API call
+  const retrieveExistingPrivateKey = () => {
+    // Temporary private key (to avoir re-deploy new account foreach test)
+
+    const privateKey =
+      "0x3ee7c3ddb0a6512fd90add01461ec840873a65a21a957ef9adfd7236b757304";
+
+    const publicKey = ec.starkCurve.getStarkKey(privateKey);
+    setKeyPair({ privateKey, publicKey });
+
+    return { privateKey, publicKey };
   };
 
-  const generateAndStorePrivateKey = async () => {
+  const generateAndStorePrivateKey = useCallback(async () => {
     const keyPair = generateKeyPair();
     setKeyPair(keyPair);
     const encryptedPrivateKey = encryptPrivateKey(keyPair.privateKey);
     await savePrivateKeyToTelegram(encryptedPrivateKey);
-  };
+  }, []);
 
   useEffect(() => {
     const initializeAccountAsync = async () => {
-      const existingPrivateKey = await retrieveExistingPrivateKey();
+      const { privateKey: existingPrivateKey } = retrieveExistingPrivateKey();
       if (!existingPrivateKey) {
         await generateAndStorePrivateKey();
       }
     };
 
-    initializeAccountAsync();
-  }, []);
+    void initializeAccountAsync();
+  }, [generateAndStorePrivateKey]);
 
   const account = useMemo(() => {
     if (!keyPair || !gaslessService) {
@@ -56,7 +66,7 @@ export default function useAccount() {
 
     const accountAddress = getArgentAccountAddress(
       keyPair.publicKey,
-      ARGENT_ACCOUNT_CLASSHASH
+      ARGENT_ACCOUNT_CLASSHASH,
     );
 
     return gaslessService.getAccount(accountAddress, keyPair.privateKey);

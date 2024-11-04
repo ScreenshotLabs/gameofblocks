@@ -76,10 +76,10 @@ export const useGaslessService = (params: GaslessServiceParams) => {
           typedData,
         );
 
-      const deploymentData = await gaslessService.getDeploymentData(
+      /*   const deploymentData = await gaslessService.getDeploymentData(
         publicKey,
         ARGENT_ACCOUNT_CLASSHASH,
-      );
+      ); */
 
       const signature =
         transactionExecutionData.signature as WeierstrassSignatureType;
@@ -92,7 +92,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
         signatureS: signature.s.toString(),
         signatureR: signature.r.toString(),
         network: gaslessService.network,
-        deploymentData,
+        // deploymentData,
       });
 
       console.log("=> invokeResponse", invokeResponse);
