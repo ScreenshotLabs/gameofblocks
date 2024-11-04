@@ -11,7 +11,6 @@ interface InteractionState {
 }
 
 type InteractionCallback = (
-  count: number,
   type: "touch" | "click",
   interactionX: number,
   interactionY: number,
@@ -48,12 +47,7 @@ export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
       }));
  */
       allTouchPoints.forEach((point) => {
-        onInteraction?.(
-          e.touches.length,
-          "touch",
-          point.position.x,
-          point.position.y,
-        );
+        onInteraction?.("touch", point.position.x, point.position.y);
       });
     },
     [onInteraction],
@@ -95,7 +89,7 @@ export const useMultiInteraction = (onInteraction?: InteractionCallback) => {
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      onInteraction?.(1, "click", e.pageX, e.pageY);
+      onInteraction?.("click", e.pageX, e.pageY);
     },
     [onInteraction],
   );

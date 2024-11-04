@@ -6,7 +6,7 @@ import { useMultiInteraction } from "@/hooks/useMultiInteraction";
 import TouchFeedback from "./TouchFeedback";
 
 interface AnimatedElement {
-  id: number;
+  id: string;
   x: number;
   y: number;
   timestamp: number;
@@ -25,15 +25,21 @@ export default function InteractiveZone({
   const [elements, setElements] = useState<AnimatedElement[]>([]);
 
   const { handlers } = useMultiInteraction(
-    (_, __, interactionX, interactionY) => {
+    (type, interactionX, interactionY) => {
+      const id = `${Date.now()}-${interactionX}-${interactionY}`;
       const newElement: AnimatedElement = {
-        id: Date.now(),
+        id,
         x: interactionX,
         y: interactionY,
         timestamp: Date.now(),
       };
 
-      setElements((prev) => [...prev, newElement]);
+      setElements((prev) =>
+        [...prev, newElement].filter(
+          (element) => element.timestamp > Date.now() - 2000,
+        ),
+      );
+
       setTimeout(() => {
         setElements((prev) => prev.filter((num) => num.id !== newElement.id));
       }, 2000);
