@@ -75,8 +75,18 @@ const config: Config = {
           },
         },
         rise: {
-          "0%": { transform: "translateY(0)", opacity: "0.5" },
-          "100%": { transform: "translateY(-100px)", opacity: "0" },
+          "0%": {
+            transform: "translate(-50%, -50%)",
+            opacity: "1",
+          },
+          "50%": {
+            transform: "translate(-50%, calc(-50% - 50px))",
+            opacity: "0.8",
+          },
+          "100%": {
+            transform: "translate(-50%, calc(-50% - 100px))",
+            opacity: "0",
+          },
         },
       },
       animation: {

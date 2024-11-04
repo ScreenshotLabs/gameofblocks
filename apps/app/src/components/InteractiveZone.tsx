@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useMultiInteraction } from "@/hooks/useMultiInteraction";
 
+import TouchFeedback from "./TouchFeedback";
+
 interface AnimatedElement {
   id: number;
   x: number;
@@ -18,37 +20,27 @@ export default function InteractiveZone({
   className?: string;
   children?: React.ReactNode;
   onInteraction?: () => void;
+  reactionElement?: React.Component;
 }) {
   const [elements, setElements] = useState<AnimatedElement[]>([]);
-  const [counter, setCounter] = useState(0);
 
   const { handlers } = useMultiInteraction(
     (_, __, interactionX, interactionY) => {
       const newElement: AnimatedElement = {
-        id: counter,
+        id: Date.now(),
         x: interactionX,
         y: interactionY,
         timestamp: Date.now(),
       };
 
       setElements((prev) => [...prev, newElement]);
-      setCounter((prev) => prev + 1);
+      setTimeout(() => {
+        setElements((prev) => prev.filter((num) => num.id !== newElement.id));
+      }, 2000);
+
       onInteraction?.();
     },
   );
-
-  // TODO: remove theses elements
-
-  /*   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now();
-      setElements((prev) =>
-        prev.filter((element) => now - element.timestamp < 3000),
-      );
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []); */
 
   return (
     <>
@@ -64,14 +56,7 @@ export default function InteractiveZone({
       </div>
       <div className="absolute bottom-0 left-0 right-0 top-0">
         {elements.map((element) => (
-          <div
-            key={element.id}
-            className="animate-rise pointer-events-none absolute z-30 h-8 w-8 rounded-full bg-blue-500 opacity-50"
-            style={{
-              left: element.x - 16,
-              top: element.y - 16,
-            }}
-          />
+          <TouchFeedback x={element.x} y={element.y} key={element.id} />
         ))}
       </div>
     </>
