@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 
   return (
     <html lang={locale}>
-      <body>
+      <body className="bg-game-background">
         <I18nProvider>
           <GaslessServiceProvider network="sepolia">
             <Root>{children}</Root>

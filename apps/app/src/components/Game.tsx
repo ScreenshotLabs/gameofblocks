@@ -4,8 +4,10 @@ import { useState } from "react";
 import useAccount from "@/hooks/useAccount";
 import { useGaslessService } from "@/hooks/useGaslessService";
 
+import GameFooter from "./GameFooter";
 import GameHeader from "./GameHeader";
 import InteractiveZone from "./InteractiveZone";
+import Lifebar from "./Lifebar";
 import TopBar from "./TopBar";
 
 const MONSTER_LIFE = 1000;
@@ -25,20 +27,27 @@ export default function Game() {
   };
 
   if (!isServiceWorking) {
-    return <div className="text-red-500">Service is currently unavailable</div>;
+    return (
+      <div className="text-status-error">Service is currently unavailable</div>
+    );
   }
 
   return (
-    <div className="h-full bg-[#0A132A]">
+    <div className="bg-game-background h-full">
       <TopBar />
       <GameHeader />
-      <div className="px-14 py-10 text-[#DAE6FF]">
-        <div className="mb-2 text-center font-bold">{MONTER_NAME}</div>
-        <div className="text-center">{`${life} / ${MONSTER_LIFE}`}</div>
+      <div className="text-game-text flex flex-col gap-4 px-14 py-10">
+        <div className="text-game-text-bright mb-2 text-center font-bold">
+          {MONTER_NAME}
+        </div>
+        <div className="flex justify-center">
+          <Lifebar max={MONSTER_LIFE} value={life} />
+        </div>
         <InteractiveZone
-          className="h-[400px] border-2 border-red-500"
+          className="h-[400px] border-2 border-white"
           onInteraction={handleAttack}
         />
+        <GameFooter />
       </div>
     </div>
   );

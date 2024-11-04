@@ -9,6 +9,8 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "game-gradient":
+          "linear-gradient(180deg, hsl(222, 59%, 10%) 0%, hsl(222, 59%, 5%) 100%)",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -56,32 +58,38 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        game: {
+          background: {
+            DEFAULT: "hsl(222, 59%, 10%)", // #0A132A
+            lighter: "hsl(222, 59%, 15%)",
+            darker: "hsl(222, 59%, 5%)",
+          },
+          text: {
+            DEFAULT: "hsl(220, 100%, 93%)", // #DAE6FF
+            muted: "hsl(220, 100%, 85%)",
+            bright: "hsl(220, 100%, 98%)",
+          },
+          life: {
+            full: "hsl(142, 76%, 45%)",
+            mid: "hsl(39, 76%, 45%)",
+            low: "hsl(0, 76%, 45%)",
+            background: "hsl(224, 32%, 15%)",
+          },
+        },
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
         rise: {
           "0%": {
             transform: "translate(-50%, -50%)",
             opacity: "1",
-          },
-          "50%": {
-            transform: "translate(-50%, calc(-50% - 50px))",
-            opacity: "0.8",
           },
           "100%": {
             transform: "translate(-50%, calc(-50% - 100px))",
@@ -92,10 +100,11 @@ const config: Config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        rise: "rise 3s ease-out forwards",
+        rise: "rise 2s cubic-bezier(0.4, 0, 0.2, 1) forwards",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
 };
+
 export default config;
