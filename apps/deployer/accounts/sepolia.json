@@ -1,0 +1,20 @@
+[
+  {
+    "address": "0x02754784916d78585a80707a860856f6ad38afc3ff122bba31f6ae5072fd21e3",
+    "privateKey": "0x758e70253de2f04e9991359ccb6933a82e97463d361b71d608d3f78cd3a43d0",
+    "publicKey": "0x2948e1a5f1bb52096dd6e0d1b943fa912ea026bf0c4358c5cc114038640b4a8",
+    "deployed": true
+  },
+  {
+    "address": "0x02abe49537b845ff591144834af500e1a56197e1abe5be5a0a892244bf9bb501",
+    "privateKey": "0x2a803005b614710af7f9e3a966cfc839a2f46fedf4c41fbec7c493f76ec40e5",
+    "publicKey": "0x3ef6117b554cd20b87a12d9ce5cbc20cd54bd91ab3d12563eacbcfa9211f2f4",
+    "deployed": true
+  },
+  {
+    "address": "0x05c2b81c7ee7a5f4eb662722cdb2c4c695f48951bb8184473d5b3b5406cac2d8",
+    "privateKey": "0xf81ef1bfd59a64448e8ef7bf31da190202508874be74844a19d0960ef9153d",
+    "publicKey": "0x1d10f8ae4f2e328cd045d7cd063a2c73d84a81b7499626e0212e385cd5e626d",
+    "deployed": true
+  }
+]
