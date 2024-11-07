@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
 import { GaslessServiceProvider } from "@/components/gasless-service-context";
 import { Root } from "@/components/Root/Root";
 import { I18nProvider } from "@/core/i18n/provider";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { getLocale } from "next-intl/server";
 
 import "@telegram-apps/telegram-ui/dist/styles.css";

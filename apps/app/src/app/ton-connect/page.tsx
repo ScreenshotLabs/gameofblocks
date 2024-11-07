@@ -1,7 +1,7 @@
 "use client";
 
 import { DisplayData } from "@/components/DisplayData/DisplayData";
-import { Page } from "@/components/page";
+import { Page } from "@/components/Page";
 import { openLink } from "@telegram-apps/sdk-react";
 import {
   Avatar,
