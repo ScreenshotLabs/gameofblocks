@@ -9,6 +9,7 @@ export default function TopBar() {
       <div className="rounded-lg bg-[#0A132A] px-4 font-bold text-[#FFBA08]">
         LVL 1
       </div>
+      <Link href="/debug">Debug</Link>
     </div>
   );
 }
