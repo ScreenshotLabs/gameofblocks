@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "starknet": "npm:starknet@6.11.0"
+  }
+}

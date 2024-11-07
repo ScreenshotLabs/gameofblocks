@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "importMap": "./import_map.json",
+  "tasks": {
+    "contract:deploy": "deno run --allow-read --allow-env --allow-write --allow-net deploy_contract.ts",
+    "accounts:new": "deno run --allow-read --allow-write --allow-env --allow-write create_accounts.ts",
+    "accounts:deploy": "deno run --allow-read --allow-write --allow-env --allow-net deploy_accounts.ts"
+  }
+}
