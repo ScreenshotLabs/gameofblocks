@@ -1,22 +1,23 @@
 "use client";
 
-import { type PropsWithChildren, useEffect } from "react";
+import type { PropsWithChildren } from "react";
+import { useEffect } from "react";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { ErrorPage } from "@/components/error-page";
+import { setLocale } from "@/core/i18n/locale";
+import { init } from "@/core/init";
+import { env } from "@/env";
+import { useClientOnce } from "@/hooks/useClientOnce";
+import { useDidMount } from "@/hooks/useDidMount";
+import { useTelegramMock } from "@/hooks/useTelegramMock";
 import {
   initData,
   miniApp,
   useLaunchParams,
   useSignal,
 } from "@telegram-apps/sdk-react";
-import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ErrorPage } from "@/components/ErrorPage";
-import { useTelegramMock } from "@/hooks/useTelegramMock";
-import { useDidMount } from "@/hooks/useDidMount";
-import { useClientOnce } from "@/hooks/useClientOnce";
-import { setLocale } from "@/core/i18n/locale";
-import { init } from "@/core/init";
-import { env } from "@/env";
+import { TonConnectUIProvider } from "@tonconnect/ui-react";
 
 import "./styles.css";
 

@@ -18,6 +18,9 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        button: {
+          primary: "#00B0C5",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -66,6 +69,7 @@ const config: Config = {
           },
           text: {
             DEFAULT: "hsl(220, 100%, 93%)", // #DAE6FF
+            secondary: "#4665A9",
             muted: "hsl(220, 100%, 85%)",
             bright: "hsl(220, 100%, 98%)",
           },

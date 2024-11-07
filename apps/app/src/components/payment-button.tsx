@@ -1,5 +1,6 @@
 "use client";
 
+import type { PaymentResponse } from "@/types/api";
 import { useState } from "react";
 import { openInvoice } from "@telegram-apps/sdk-react";
 
@@ -15,10 +16,10 @@ export default function PaymentButton() {
           const response = await fetch("/api/payment", {
             method: "POST",
           });
-          const { slug } = await response.json();
+          const { slug } = (await response.json()) as PaymentResponse;
           console.log("slug", slug);
 
-          const invoiceStatus = await openInvoice(slug as string);
+          const invoiceStatus = await openInvoice(slug);
           console.log("invoiceStatus", invoiceStatus);
           setInvoiceStatus(invoiceStatus);
         }}
