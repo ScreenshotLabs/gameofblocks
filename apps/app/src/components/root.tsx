@@ -19,7 +19,7 @@ import {
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 
-import "./styles.css";
+import Loader from "./loader";
 
 function RootInner({ children }: PropsWithChildren) {
   const isDev = env.NODE_ENV === "development";
@@ -74,6 +74,6 @@ export function Root(props: PropsWithChildren) {
       <RootInner {...props} />
     </ErrorBoundary>
   ) : (
-    <div className="root__loading">Loading</div>
+    <Loader />
   );
 }

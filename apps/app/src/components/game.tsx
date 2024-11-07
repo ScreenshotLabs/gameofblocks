@@ -1,13 +1,17 @@
 "use client";
 
-import type { PlayResult } from "@/types/api";
+import type { GameDataResult } from "@/types/api";
 import { useEffect, useState } from "react";
+import useAccount from "@/hooks/useAccount";
+import { useGaslessService } from "@/hooks/useGaslessService";
 import { useQuery } from "@tanstack/react-query";
+import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
 
 import GameFooter from "./game-footer";
 import GameHeader from "./game-header";
 import InteractiveZone from "./interactive-zone";
 import Lifebar from "./lifebar";
+import Loader from "./loader";
 import TopBar from "./top-bar";
 
 const MONSTER_LIFE = 1000;
@@ -18,27 +22,38 @@ interface Monster {
   life: number;
 }
 
+enum GameState {
+  LAUNCHED,
+  INITIALIZING,
+  INITIALIZED,
+  ERROR,
+}
+
 export default function Game() {
-  const [initialized, setInitialized] = useState(false);
+  const launchParams = retrieveLaunchParams();
+  const [gameState, setGameState] = useState<GameState>(GameState.LAUNCHED);
   const [life, setLife] = useState<number | undefined>();
 
-  /* const { account, privateKey, publicKey } = useAccount(); */
-  /*   const { isServiceWorking } = useGaslessService({
+  const { account, privateKey, publicKey } = useAccount();
+  const { isServiceWorking, spawnPlayer } = useGaslessService({
     address: account?.address,
     publicKey,
     privateKey,
-  }); */
+  });
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["game-data"],
     queryFn: async () => {
-      const response = await fetch("/api/game-data", {
-        method: "GET",
-        headers: {
-          // TODO
-          // Authorization: `tma ${launchParams.initDataRaw}`,
+      const response = await fetch(
+        `/api/game-data?address=${account?.address}`,
+        {
+          method: "GET",
+          headers: {
+            // TODO
+            // Authorization: `tma ${launchParams.initDataRaw}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -46,42 +61,59 @@ export default function Game() {
         );
       }
 
-      const data = (await response.json()) as PlayResult;
+      const data = (await response.json()) as GameDataResult;
       return data;
     },
     refetchInterval: 1000,
-    enabled: !initialized || (life !== undefined && life <= 0),
+    enabled:
+      !!account &&
+      (gameState !== GameState.INITIALIZED ||
+        (life !== undefined && life <= 0)),
   });
 
   useEffect(() => {
-    if (data) {
-      setLife(data.monster.life);
-      if (!initialized) {
-        setInitialized(true);
-      }
+    if (gameState !== GameState.LAUNCHED) {
+      return;
     }
-  }, [data]);
 
-  console.log("=> data", data);
+    if (!data?.isInitializationRequired) {
+      setGameState(GameState.INITIALIZED);
+      return;
+    }
+
+    const initPlayer = async () => {
+      setGameState(GameState.INITIALIZING);
+
+      try {
+        await spawnPlayer();
+      } catch (error: any) {
+        console.error(error);
+        setGameState(GameState.ERROR);
+      }
+    };
+
+    void initPlayer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const handleAttack = () => {
     setLife((prevValue) => (prevValue ?? 0) - 1);
   };
 
-  /*
-    if (!isServiceWorking) {
+  if (!isServiceWorking) {
     return (
       <div className="text-status-error">Service is currently unavailable</div>
     );
   }
-  */
 
-  if (!initialized) {
-    return <div>Loading...</div>;
+  if (gameState !== GameState.INITIALIZED) {
+    return <Loader />;
   }
 
   return (
     <div className="bg-game-background h-full">
+      <div className="text-white">{JSON.stringify(data)}</div>
+
       <TopBar />
       <GameHeader />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">

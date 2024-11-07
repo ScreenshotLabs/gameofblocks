@@ -41,7 +41,7 @@ export default function useAccount() {
         privateKey,
       };
     } else {
-      privateKey = await decryptPrivateKey(encryptedPrivateKey);
+      privateKey = decryptPrivateKey(encryptedPrivateKey);
       publicKey = ec.starkCurve.getStarkKey(privateKey);
     }
 

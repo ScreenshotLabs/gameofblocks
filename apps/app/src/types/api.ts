@@ -5,8 +5,10 @@ export interface LeaderboardResult {
   }[];
 }
 
-export interface PlayResult {
+export interface GameDataResult {
+  isInitializationRequired: boolean;
   monster: {
+    id: number;
     life: number;
   };
 }
