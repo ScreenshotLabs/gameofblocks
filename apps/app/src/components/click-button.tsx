@@ -31,7 +31,7 @@ export default function ClickButton() {
   }
 
   return (
-    <div>
+    <div className="text-white">
       {error && <div>Error: {error}</div>}
       <div>AVNU service is working: {isServiceWorking ? "✅" : "❌"}</div>
       <div>Account ClassHash: {classHash}</div>
