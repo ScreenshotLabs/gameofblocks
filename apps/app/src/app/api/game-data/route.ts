@@ -16,8 +16,17 @@ export async function GET(req: NextRequest) {
   const contract = new Contract(abi, CONTRACT_ADDRESS, provider);
 
   const playerExists = (await contract.get_player_exists(address)) as boolean;
-  const rawPlayerStats = (await contract.get_player_stats(address)) as string[];
 
+  if (!playerExists) {
+    return NextResponse.json(
+      {
+        isInitializationRequired: true,
+      },
+      { status: 200 },
+    );
+  }
+
+  const rawPlayerStats = (await contract.get_player_stats(address)) as string[];
   const attack = BigInt(rawPlayerStats[0]);
   const energyCap = BigInt(rawPlayerStats[1]);
   const recovery = BigInt(rawPlayerStats[2]);

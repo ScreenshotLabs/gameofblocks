@@ -24,7 +24,7 @@ enum GameState {
 }
 
 export default function Game() {
-  const launchParams = retrieveLaunchParams();
+  // const launchParams = retrieveLaunchParams();
   const [gameState, setGameState] = useState<GameState>(GameState.LAUNCHED);
   const [baseHealth, setBaseHealth] = useState<number | undefined>();
   const [currentHealth, setCurrentHealth] = useState<number | undefined>();
@@ -35,6 +35,13 @@ export default function Game() {
     publicKey,
     privateKey,
   });
+
+  const queryIsEnabled =
+    !!account &&
+    ([GameState.LAUNCHED, GameState.INITIALIZING].includes(gameState) ||
+      (currentHealth !== undefined && currentHealth <= 0));
+
+  console.log("=> queryIsEnabled", queryIsEnabled, GameState[gameState]);
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["game-data"],
@@ -60,25 +67,11 @@ export default function Game() {
       return data;
     },
     refetchInterval: 1000,
-    enabled:
-      !!account &&
-      (gameState === GameState.LAUNCHED ||
-        (currentHealth !== undefined && currentHealth <= 0)),
+    enabled: queryIsEnabled,
   });
 
   useEffect(() => {
-    if (gameState !== GameState.LAUNCHED) {
-      return;
-    }
-
     if (!data) {
-      return;
-    }
-
-    if (!data.isInitializationRequired) {
-      setGameState(GameState.INITIALIZED);
-      setCurrentHealth(Number(data.boss.currentHealth));
-      setBaseHealth(Number(data.boss.baseHealth));
       return;
     }
 
@@ -86,14 +79,34 @@ export default function Game() {
       setGameState(GameState.INITIALIZING);
       try {
         await spawnPlayer();
-        setGameState(GameState.INITIALIZED);
+        // setGameState(GameState.INITIALIZED);
       } catch (error: any) {
         console.error(error);
         setGameState(GameState.ERROR);
       }
     };
 
-    void initPlayer();
+    switch (gameState) {
+      case GameState.INITIALIZED:
+      case GameState.ERROR:
+        return;
+
+      case GameState.INITIALIZING:
+        console.log("=> data", data);
+        if (!data.isInitializationRequired) {
+          console.log("=> initialized data", data);
+          setCurrentHealth(Number(data.boss.currentHealth));
+          setBaseHealth(Number(data.boss.baseHealth));
+          setGameState(GameState.INITIALIZED);
+        }
+
+        break;
+
+      case GameState.LAUNCHED:
+        void initPlayer();
+        break;
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
