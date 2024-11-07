@@ -2,7 +2,10 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { GaslessServiceContext } from "@/components/gasless-service-context";
 import { ARGENT_ACCOUNT_CLASSHASH } from "@/core/constants";
 import { generateKeyPair, getArgentAccountAddress } from "@/lib/account";
+import { cloudStorage } from "@telegram-apps/sdk-react";
 import { ec } from "starknet";
+
+const PK_KEY = "pk";
 
 export default function useAccount() {
   const gaslessService = useContext(GaslessServiceContext);
@@ -13,29 +16,35 @@ export default function useAccount() {
   }>();
 
   const encryptPrivateKey = (privateKey: string): string => {
-    // Placeholder for actual encryption logic
-    return privateKey; // This should be replaced with actual encryption logic
+    // TODO: encrypt key
+    return privateKey;
   };
 
   const decryptPrivateKey = (encryptedPrivateKey: string): string => {
-    // Placeholder for actual decryption logic
-    return encryptedPrivateKey; // This should be replaced with actual decryption logic
+    // TODO: decrypt key
+    return encryptedPrivateKey;
   };
 
   const savePrivateKeyToTelegram = async (encryptedPrivateKey: string) => {
-    // ...
-
-    // Placeholder for actual Telegram API call to save private key
-    console.log("Saving private key to Telegram:", encryptedPrivateKey); // This should be replaced with actual Telegram API call
+    await cloudStorage.setItem(PK_KEY, encryptedPrivateKey);
   };
 
-  const retrieveExistingPrivateKey = () => {
-    // Temporary private key (to avoir re-deploy new account foreach test)
+  const retrieveExistingPrivateKey = async () => {
+    const encryptedPrivateKey = await cloudStorage.getItem(PK_KEY);
 
-    const privateKey =
-      "0x3ee7c3ddb0a6512fd90add01461ec840873a65a21a957ef9adfd7236b757304";
+    let privateKey = null;
+    let publicKey = null;
 
-    const publicKey = ec.starkCurve.getStarkKey(privateKey);
+    if (!encryptedPrivateKey) {
+      return {
+        publicKey,
+        privateKey,
+      };
+    } else {
+      privateKey = await decryptPrivateKey(encryptedPrivateKey);
+      publicKey = ec.starkCurve.getStarkKey(privateKey);
+    }
+
     setKeyPair({ privateKey, publicKey });
 
     return { privateKey, publicKey };
@@ -45,13 +54,15 @@ export default function useAccount() {
     const keyPair = generateKeyPair();
     setKeyPair(keyPair);
     const encryptedPrivateKey = encryptPrivateKey(keyPair.privateKey);
+
     await savePrivateKeyToTelegram(encryptedPrivateKey);
   }, []);
 
   useEffect(() => {
     const initializeAccountAsync = async () => {
-      const { privateKey: existingPrivateKey } = retrieveExistingPrivateKey();
-      if (!existingPrivateKey) {
+      const { privateKey } = await retrieveExistingPrivateKey();
+
+      if (!privateKey) {
         await generateAndStorePrivateKey();
       }
     };
