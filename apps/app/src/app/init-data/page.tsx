@@ -4,7 +4,7 @@ import type { DisplayDataRow } from "@/components/DisplayData/DisplayData";
 import type { User } from "@telegram-apps/sdk-react";
 import { useMemo } from "react";
 import { DisplayData } from "@/components/DisplayData/DisplayData";
-import { Page } from "@/components/Page";
+import { Page } from "@/components/page";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { List, Placeholder } from "@telegram-apps/telegram-ui";
 

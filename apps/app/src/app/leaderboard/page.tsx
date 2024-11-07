@@ -1,5 +1,5 @@
 import GameHeader from "@/components/game-header";
-import { Page } from "@/components/Page";
+import { Page } from "@/components/page";
 
 import Leaderboard from "./components/Leaderboard";
 

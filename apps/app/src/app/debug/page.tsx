@@ -1,7 +1,7 @@
 "use client";
 
 import ClickButton from "@/components/click-button";
-import { Page } from "@/components/Page";
+import { Page } from "@/components/page";
 import PaymentButton from "@/components/payment-button";
 
 export default function DebugPage() {
