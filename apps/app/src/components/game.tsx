@@ -67,8 +67,7 @@ export default function Game() {
     refetchInterval: 1000,
     enabled:
       !!account &&
-      (gameState !== GameState.INITIALIZED ||
-        (life !== undefined && life <= 0)),
+      (gameState === GameState.LAUNCHED || (life !== undefined && life <= 0)),
   });
 
   useEffect(() => {
@@ -76,16 +75,20 @@ export default function Game() {
       return;
     }
 
-    if (!data?.isInitializationRequired) {
+    if (!data) {
+      return;
+    }
+
+    if (!data.isInitializationRequired) {
       setGameState(GameState.INITIALIZED);
       return;
     }
 
     const initPlayer = async () => {
       setGameState(GameState.INITIALIZING);
-
       try {
         await spawnPlayer();
+        setGameState(GameState.INITIALIZED);
       } catch (error: any) {
         console.error(error);
         setGameState(GameState.ERROR);
@@ -112,8 +115,6 @@ export default function Game() {
 
   return (
     <div className="bg-game-background h-full">
-      <div className="text-white">{JSON.stringify(data)}</div>
-
       <TopBar />
       <GameHeader />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">
