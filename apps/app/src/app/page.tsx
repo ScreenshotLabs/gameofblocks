@@ -1,6 +1,6 @@
 "use client";
 
-import Game from "@/components/Game";
+import Game from "@/components/game";
 import { Page } from "@/components/page";
 
 // import { useTranslations } from "next-intl";
