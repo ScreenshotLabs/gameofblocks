@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
 import { GaslessServiceProvider } from "@/components/gasless-service-context";
-import { Root } from "@/components/Root/Root";
+import { Root } from "@/components/root";
 import { I18nProvider } from "@/core/i18n/provider";
 import { getLocale } from "next-intl/server";
 

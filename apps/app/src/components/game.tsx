@@ -1,44 +1,54 @@
 "use client";
 
-import type { PlayResult } from "@/types/api";
+import type { GameDataResult } from "@/types/api";
 import { useEffect, useState } from "react";
+import useAccount from "@/hooks/useAccount";
+import { useGaslessService } from "@/hooks/useGaslessService";
 import { useQuery } from "@tanstack/react-query";
+import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
 
 import GameFooter from "./game-footer";
 import GameHeader from "./game-header";
 import InteractiveZone from "./interactive-zone";
 import Lifebar from "./lifebar";
+import Loader from "./loader";
 import TopBar from "./top-bar";
 
-const MONSTER_LIFE = 1000;
 const MONTER_NAME = "PEPE THE MAGNIFICENT";
 
-interface Monster {
-  id: number;
-  life: number;
+enum GameState {
+  LAUNCHED,
+  INITIALIZING,
+  INITIALIZED,
+  ERROR,
 }
 
 export default function Game() {
-  const [initialized, setInitialized] = useState(false);
-  const [life, setLife] = useState<number | undefined>();
+  const launchParams = retrieveLaunchParams();
+  const [gameState, setGameState] = useState<GameState>(GameState.LAUNCHED);
+  const [baseHealth, setBaseHealth] = useState<number | undefined>();
+  const [currentHealth, setCurrentHealth] = useState<number | undefined>();
 
-  /* const { account, privateKey, publicKey } = useAccount(); */
-  /*   const { isServiceWorking } = useGaslessService({
+  const { account, privateKey, publicKey } = useAccount();
+  const { isServiceWorking, spawnPlayer } = useGaslessService({
     address: account?.address,
     publicKey,
     privateKey,
-  }); */
+  });
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["game-data"],
     queryFn: async () => {
-      const response = await fetch("/api/game-data", {
-        method: "GET",
-        headers: {
-          // TODO
-          // Authorization: `tma ${launchParams.initDataRaw}`,
+      const response = await fetch(
+        `/api/game-data?address=${account?.address}`,
+        {
+          method: "GET",
+          headers: {
+            // TODO
+            // Authorization: `tma ${launchParams.initDataRaw}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -46,38 +56,59 @@ export default function Game() {
         );
       }
 
-      const data = (await response.json()) as PlayResult;
+      const data = (await response.json()) as GameDataResult;
       return data;
     },
     refetchInterval: 1000,
-    enabled: !initialized || (life !== undefined && life <= 0),
+    enabled:
+      !!account &&
+      (gameState === GameState.LAUNCHED ||
+        (currentHealth !== undefined && currentHealth <= 0)),
   });
 
   useEffect(() => {
-    if (data) {
-      setLife(data.monster.life);
-      if (!initialized) {
-        setInitialized(true);
-      }
+    if (gameState !== GameState.LAUNCHED) {
+      return;
     }
+
+    if (!data) {
+      return;
+    }
+
+    if (!data.isInitializationRequired) {
+      setGameState(GameState.INITIALIZED);
+      setCurrentHealth(Number(data.boss.currentHealth));
+      setBaseHealth(Number(data.boss.baseHealth));
+      return;
+    }
+
+    const initPlayer = async () => {
+      setGameState(GameState.INITIALIZING);
+      try {
+        await spawnPlayer();
+        setGameState(GameState.INITIALIZED);
+      } catch (error: any) {
+        console.error(error);
+        setGameState(GameState.ERROR);
+      }
+    };
+
+    void initPlayer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  console.log("=> data", data);
-
   const handleAttack = () => {
-    setLife((prevValue) => (prevValue ?? 0) - 1);
+    setCurrentHealth((prevValue) => (prevValue ?? 0) - 1);
   };
 
-  /*
-    if (!isServiceWorking) {
+  if (!isServiceWorking) {
     return (
       <div className="text-status-error">Service is currently unavailable</div>
     );
   }
-  */
 
-  if (!initialized) {
-    return <div>Loading...</div>;
+  if (gameState !== GameState.INITIALIZED) {
+    return <Loader />;
   }
 
   return (
@@ -89,7 +120,7 @@ export default function Game() {
           {MONTER_NAME}
         </div>
         <div className="flex justify-center">
-          <Lifebar max={MONSTER_LIFE} value={life ?? 0} />
+          <Lifebar max={baseHealth ?? 1000} value={currentHealth ?? 0} />
         </div>
         <InteractiveZone
           className="h-[400px] border-2 border-white"

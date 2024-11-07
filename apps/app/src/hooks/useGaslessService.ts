@@ -36,13 +36,13 @@ export const useGaslessService = (params: GaslessServiceParams) => {
     void checkServiceStatusAsync();
   }, [gaslessService]);
 
-  async function incrementScore() {
+  async function spawnPlayer() {
     try {
       if (!gaslessService) {
         throw new Error("Gasless service is not available");
       }
 
-      console.log("Incrementing score...");
+      console.log("Spawning new player...");
 
       if (!address || !privateKey || !publicKey) {
         throw new Error("Missing account information");
@@ -55,7 +55,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
 
       const calls: Call[] = [
         {
-          entrypoint: "set_score",
+          entrypoint: "spawn",
           contractAddress: CONTRACT_ADDRESS,
           calldata: [],
         },
@@ -76,10 +76,10 @@ export const useGaslessService = (params: GaslessServiceParams) => {
           typedData,
         );
 
-      /*   const deploymentData = await gaslessService.getDeploymentData(
+      const deploymentData = gaslessService.getDeploymentData(
         publicKey,
         ARGENT_ACCOUNT_CLASSHASH,
-      ); */
+      );
 
       const signature =
         transactionExecutionData.signature as WeierstrassSignatureType;
@@ -92,7 +92,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
         signatureS: signature.s.toString(),
         signatureR: signature.r.toString(),
         network: gaslessService.network,
-        // deploymentData,
+        deploymentData,
       });
 
       console.log("=> invokeResponse", invokeResponse);
@@ -133,7 +133,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
     checkAccountCompatibilityAsync,
     clearError,
     transactions,
-    incrementScore,
+    spawnPlayer,
     network: gaslessService?.network,
   };
 };

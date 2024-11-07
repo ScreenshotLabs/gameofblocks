@@ -5,9 +5,18 @@ export interface LeaderboardResult {
   }[];
 }
 
-export interface PlayResult {
-  monster: {
-    life: number;
+export interface GameDataResult {
+  isInitializationRequired: boolean;
+  boss: {
+    id: string;
+    currentHealth: string;
+    isDefeated: boolean;
+    baseHealth: string;
+  };
+  player: {
+    attack: string;
+    energyCap: string;
+    recovery: string;
   };
 }
 
