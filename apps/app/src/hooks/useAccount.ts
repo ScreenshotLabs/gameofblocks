@@ -51,6 +51,7 @@ export default function useAccount() {
   };
 
   const generateAndStorePrivateKey = useCallback(async () => {
+    console.log("=> generateAndStorePrivateKey");
     const keyPair = generateKeyPair();
     setKeyPair(keyPair);
     const encryptedPrivateKey = encryptPrivateKey(keyPair.privateKey);

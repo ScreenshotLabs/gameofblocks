@@ -115,6 +115,12 @@ export default function Game() {
 
   return (
     <div className="bg-game-background h-full">
+      <div className="text-white">
+        TEST
+        <div>Account addr: {account?.address}</div>
+        <div>Private key: {privateKey}</div>
+        <div>Public key: {publicKey}</div>
+      </div>
       <TopBar />
       <GameHeader />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">
