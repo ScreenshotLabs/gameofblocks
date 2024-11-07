@@ -7,9 +7,16 @@ export interface LeaderboardResult {
 
 export interface GameDataResult {
   isInitializationRequired: boolean;
-  monster: {
-    id: number;
-    life: number;
+  boss: {
+    id: string;
+    currentHealth: string;
+    isDefeated: boolean;
+    baseHealth: string;
+  };
+  player: {
+    attack: string;
+    energyCap: string;
+    recovery: string;
   };
 }
 

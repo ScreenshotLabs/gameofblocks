@@ -1,4 +1,9 @@
 import type { GameDataResult } from "@/types/api";
+import type {
+  GetBossInfoResult,
+  GetPlayerBossStateResult,
+  GetPlayerStatsResult,
+} from "@/types/starknet";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { CONTRACT_ADDRESS } from "@/core/constants";
@@ -16,16 +21,41 @@ export async function GET(req: NextRequest) {
   const contract = new Contract(abi, CONTRACT_ADDRESS, provider);
 
   const playerExists = (await contract.get_player_exists(address)) as boolean;
-  const monsterId = Math.floor(Math.random() * 10) + 1;
-  const monsterLife = Math.floor(Math.random() * (2000 - 1000)) + 1000;
+  const rawPlayerStats = (await contract.get_player_stats(address)) as string[];
 
-  console.log("=> playerExists", playerExists);
+  const attack = BigInt(rawPlayerStats[0]);
+  const energyCap = BigInt(rawPlayerStats[1]);
+  const recovery = BigInt(rawPlayerStats[2]);
+
+  const bossIdStr = (await contract.get_player_current_boss(address)) as string;
+  const bossId = BigInt(bossIdStr);
+  const rawBossInfo = (await contract.get_boss_info(bossIdStr)) as string[];
+
+  console.log("=> rawBossInfo", rawBossInfo);
+
+  const baseHealth = BigInt(rawBossInfo[0]);
+  // const isActive: boolean = rawBossInfo[1];
+
+  const rawPlayerBossState = (await contract.get_player_boss_state(
+    address,
+    bossIdStr,
+  )) as string[];
+
+  const currentHealth = BigInt(rawPlayerBossState[0]);
+  const isDefeated = Boolean(rawPlayerBossState[1]);
 
   const result: GameDataResult = {
     isInitializationRequired: !playerExists,
-    monster: {
-      id: monsterId,
-      life: monsterLife,
+    player: {
+      attack: attack.toString(),
+      energyCap: energyCap.toString(),
+      recovery: recovery.toString(),
+    },
+    boss: {
+      id: bossId.toString(),
+      currentHealth: currentHealth.toString(),
+      isDefeated,
+      baseHealth: baseHealth.toString(),
     },
   };
 

@@ -14,13 +14,7 @@ import Lifebar from "./lifebar";
 import Loader from "./loader";
 import TopBar from "./top-bar";
 
-const MONSTER_LIFE = 1000;
 const MONTER_NAME = "PEPE THE MAGNIFICENT";
-
-interface Monster {
-  id: number;
-  life: number;
-}
 
 enum GameState {
   LAUNCHED,
@@ -32,7 +26,8 @@ enum GameState {
 export default function Game() {
   const launchParams = retrieveLaunchParams();
   const [gameState, setGameState] = useState<GameState>(GameState.LAUNCHED);
-  const [life, setLife] = useState<number | undefined>();
+  const [baseHealth, setBaseHealth] = useState<number | undefined>();
+  const [currentHealth, setCurrentHealth] = useState<number | undefined>();
 
   const { account, privateKey, publicKey } = useAccount();
   const { isServiceWorking, spawnPlayer } = useGaslessService({
@@ -67,7 +62,8 @@ export default function Game() {
     refetchInterval: 1000,
     enabled:
       !!account &&
-      (gameState === GameState.LAUNCHED || (life !== undefined && life <= 0)),
+      (gameState === GameState.LAUNCHED ||
+        (currentHealth !== undefined && currentHealth <= 0)),
   });
 
   useEffect(() => {
@@ -81,6 +77,8 @@ export default function Game() {
 
     if (!data.isInitializationRequired) {
       setGameState(GameState.INITIALIZED);
+      setCurrentHealth(Number(data.boss.currentHealth));
+      setBaseHealth(Number(data.boss.baseHealth));
       return;
     }
 
@@ -100,7 +98,7 @@ export default function Game() {
   }, [data]);
 
   const handleAttack = () => {
-    setLife((prevValue) => (prevValue ?? 0) - 1);
+    setCurrentHealth((prevValue) => (prevValue ?? 0) - 1);
   };
 
   if (!isServiceWorking) {
@@ -122,7 +120,7 @@ export default function Game() {
           {MONTER_NAME}
         </div>
         <div className="flex justify-center">
-          <Lifebar max={MONSTER_LIFE} value={life ?? 0} />
+          <Lifebar max={baseHealth ?? 1000} value={currentHealth ?? 0} />
         </div>
         <InteractiveZone
           className="h-[400px] border-2 border-white"
