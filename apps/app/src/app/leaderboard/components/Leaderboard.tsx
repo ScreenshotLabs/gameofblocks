@@ -27,10 +27,6 @@ export default function Leaderboard() {
           <div className="text-[#4665A9]">Your Rank</div>
         </div>
       </div>
-
-      {/*   {data.rankings.map((ranking, index) => {
-        return <div key={`ranking-${index}`}>test</div>;
-      })} */}
     </div>
   );
 }

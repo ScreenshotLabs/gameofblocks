@@ -1,9 +1,4 @@
 import type { GameDataResult } from "@/types/api";
-import type {
-  GetBossInfoResult,
-  GetPlayerBossStateResult,
-  GetPlayerStatsResult,
-} from "@/types/starknet";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { CONTRACT_ADDRESS } from "@/core/constants";

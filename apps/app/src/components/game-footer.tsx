@@ -13,7 +13,6 @@ export default function GameFooter() {
           src="/images/peasant.png"
         />
       </div> */}
-      <Button className="bg-button-primary size-12">Test</Button>
     </div>
   );
 }
