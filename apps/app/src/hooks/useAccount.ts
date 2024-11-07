@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { GaslessServiceContext } from "@/components/GaslessServiceContext";
+import { GaslessServiceContext } from "@/components/gasless-service-context";
 import { ARGENT_ACCOUNT_CLASSHASH } from "@/core/constants";
 import { generateKeyPair, getArgentAccountAddress } from "@/lib/account";
 import { ec } from "starknet";

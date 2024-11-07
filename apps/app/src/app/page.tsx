@@ -1,7 +1,7 @@
 "use client";
 
-import Game from "@/components/Game";
-import { Page } from "@/components/Page";
+import Game from "@/components/game";
+import { Page } from "@/components/page";
 import { useTranslations } from "next-intl";
 
 export default function Home() {

@@ -1,15 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import type { QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
-import { GaslessServiceProvider } from "@/components/GaslessServiceContext";
+import { GaslessServiceProvider } from "@/components/gasless-service-context";
 import { Root } from "@/components/Root/Root";
 import { I18nProvider } from "@/core/i18n/provider";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { getLocale } from "next-intl/server";
 
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import "normalize.css/normalize.css";
 import "./_assets/globals.css";
 
-import Image from "next/image";
+import { ReactQueryProvider } from "@/components/react-query-provider";
 
 export const metadata: Metadata = {
   title: "Your Application Title Goes Here",
@@ -22,11 +25,13 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang={locale}>
       <body className="bg-game-background">
-        <I18nProvider>
-          <GaslessServiceProvider network="sepolia">
-            <Root>{children}</Root>
-          </GaslessServiceProvider>
-        </I18nProvider>
+        <ReactQueryProvider>
+          <I18nProvider>
+            <GaslessServiceProvider network="sepolia">
+              <Root>{children}</Root>
+            </GaslessServiceProvider>
+          </I18nProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 import type { Call, WeierstrassSignatureType } from "starknet";
 import { useContext, useEffect, useState } from "react";
 import { buildTypedData, executeTransaction } from "@/app/actions/gasless";
-import { GaslessServiceContext } from "@/components/GaslessServiceContext";
+import { GaslessServiceContext } from "@/components/gasless-service-context";
 import { ARGENT_ACCOUNT_CLASSHASH, CONTRACT_ADDRESS } from "@/core/constants";
 
 interface GaslessServiceParams {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMultiInteraction } from "@/hooks/useMultiInteraction";
 
-import TouchFeedback from "./TouchFeedback";
+import TouchFeedback from "./touch-feedback";
 
 interface AnimatedElement {
   id: string;
@@ -60,7 +60,7 @@ export default function InteractiveZone({
       >
         {children}
       </div>
-      <div className="absolute bottom-0 left-0 right-0 top-0">
+      <div className="absolute bottom-0 left-0 right-0 top-0 z-0">
         {elements.map((element) => (
           <TouchFeedback x={element.x} y={element.y} key={element.id} />
         ))}
