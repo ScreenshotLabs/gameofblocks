@@ -96,8 +96,8 @@ export default function useGame() {
         );
         if (!data.isInitializationRequired) {
           console.log("Initialization not required, setting health and state.");
-          setCurrentHealth(Number(data.boss.currentHealth));
-          setBaseHealth(Number(data.boss.baseHealth));
+          setCurrentHealth(Number(data.boss?.currentHealth ?? 10000));
+          setBaseHealth(Number(data.boss?.baseHealth ?? 10000));
           setGameState(GameState.INITIALIZED);
         }
 
@@ -116,8 +116,8 @@ export default function useGame() {
           console.log(
             "Initialization not required, setting health and state directly.",
           );
-          setCurrentHealth(Number(data.boss.currentHealth));
-          setBaseHealth(Number(data.boss.baseHealth));
+          setCurrentHealth(Number(data.boss?.currentHealth ?? 10000));
+          setBaseHealth(Number(data.boss?.baseHealth ?? 10000));
           setGameState(GameState.INITIALIZED);
         }
         break;
@@ -125,8 +125,7 @@ export default function useGame() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-
-  const bossName = data && data.boss ? BOSSES[data.boss.id]?.name || "" : "";
+  const bossName = data?.boss?.id ? BOSSES[data.boss.id]?.name || "" : "";
 
   return {
     gameState,
