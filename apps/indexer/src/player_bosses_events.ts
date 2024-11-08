@@ -102,9 +102,8 @@ if (!DATABASE_URL || !CONTRACT_ADDRESS) {
 }
 
 // Event keys
-const PLAYER_CREATED_EVENT = "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
-const PLAYER_UPDATED_EVENT = "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
-const PLAYER_EARNED_GOLD_EVENT = "0x00300845cd477625325aa95c11d42391d6a9396236bf5034797d00f718ff8f99";
+const BOSS_ATTACKED = "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
+const BOSS_DEFEATED = "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
 // Filter configuration
 const filter = {
   header: {
@@ -113,17 +112,12 @@ const filter = {
   events: [
     {
       fromAddress: CONTRACT_ADDRESS,
-      keys: [PLAYER_CREATED_EVENT],
+      keys: [BOSS_ATTACKED],
       includeReceipt: false,
     },
     {
       fromAddress: CONTRACT_ADDRESS,
-      keys: [PLAYER_UPDATED_EVENT],
-      includeReceipt: false,
-    },
-    {
-      fromAddress: CONTRACT_ADDRESS,
-      keys: [PLAYER_EARNED_GOLD_EVENT],
+      keys: [BOSS_DEFEATED],
       includeReceipt: false,
     },
   ],
@@ -134,52 +128,16 @@ export const config: Config = {
   streamUrl: "https://sepolia.starknet.a5a.ch",
   startingBlock: 293160,
   network: "starknet",
-  authToken: "dna_szdjATEagn6GhxEyPPeL",
+  authToken: "dna_LLzGr1wBZ0kcnyyRutt5",
   finality: "DATA_STATUS_ACCEPTED",
   filter,
   sinkType: "postgres",
   sinkOptions: {
     entityMode: true,
     connectionString: DATABASE_URL,
-    tableName: "players",
+    tableName: "player_bosses",
   },
 };
-
-function parsePlayerData(data: string[], eventKey: string): Partial<TransformResult> {
-  try {
-    // Determine the offset based on event type
-    const offset = eventKey === PLAYER_UPDATED_EVENT ? 1 : 0;
-
-    // Parse upgrade_type for PLAYER_UPDATED_EVENT
-    const result: Partial<TransformResult> = {};
-    if (eventKey === PLAYER_UPDATED_EVENT) {
-      result.upgrade_type = UPDATE_TYPE[parseInt(data[0])] as string;
-    }
-
-    // Parse the rest of the data with offset
-    Object.assign(result, {
-      attack_power: parseInt(data[0 + offset], 16),
-      energy_cap: parseInt(data[1 + offset], 16),
-      energy_recovery: parseInt(data[2 + offset], 16),
-      attack_level: parseInt(data[3 + offset], 16),
-      energy_level: parseInt(data[4 + offset], 16),
-      recovery_level: parseInt(data[5 + offset], 16),
-      current_boss_id: parseInt(data[6 + offset], 16),
-      // Handle gold differently based on event type
-      gold_earned: 0,
-      total_gold: eventKey === PLAYER_CREATED_EVENT ?
-        0 :
-        Number(BigInt(data[7 + offset])),
-      gold_spent: eventKey === PLAYER_CREATED_EVENT ?
-      0 : Number(BigInt(data[8 + offset]))
-    });
-
-    return result;
-  } catch (error) {
-    logger.error('Error parsing player data:', error);
-    throw new Error(`Failed to parse player data: ${error}`);
-  }
-}
 
 export default function transform({
   header,
@@ -198,64 +156,26 @@ export default function transform({
       eventKey
     });
     try {
-      if (eventKey === PLAYER_EARNED_GOLD_EVENT) {
-        console.log('PLAYER_EARNED_GOLD_EVENT');
-        return {
-          entity: {
-            contract_address
-          },
-          update: {
-            gold_earned: parseInt(event.data[0], 16),
-            total_gold: parseInt(event.data[1], 16),
-            contract_address,
-            id: transactionHash,
-            last_updated: timestamp,
-            action_type: 'PLAYER_ATTACK',
-            gold_spent: 0,
-            upgrade_type: null
-          }
-        };
-      }
       // Handle Player Created Event
-      if (eventKey === PLAYER_CREATED_EVENT) {
-        const playerData = parsePlayerData(event.data, eventKey);
-        const baseData = {
-          block_hash: blockHash,
-          block_number: Number(blockNumber),
-          block_timestamp: timestamp,
-          transaction_hash: transactionHash,
-          ...playerData,
-          action_type: 'PLAYER_CREATED'
-        };
-        logger.debug('Processing data PLAYER_UPDATED_EVENT:', baseData);
-
+      if (eventKey === BOSS_ATTACKED) {
         return {
           insert: {
-            ...baseData,
-            contract_address,
             id: transactionHash,
+            player_id: event.keys[1],
+            boss_id: event.data[1],
+            current_health: event.data[2],
+            is_defeated: false,
             last_updated: timestamp,
           }
         };
       }
       // Handle Player Updated Event
-      else if (eventKey === PLAYER_UPDATED_EVENT) {
-        const playerData = parsePlayerData(event.data, eventKey);
-        const baseData = {
-          block_hash: blockHash,
-          block_number: Number(blockNumber),
-          block_timestamp: timestamp,
-          transaction_hash: transactionHash,
-          ...playerData,
-          action_type: 'PLAYER_UPDATED'
-        };
-        logger.debug('Processing data PLAYER_UPDATED_EVENT:', baseData);
+      else if (eventKey === BOSS_DEFEATED) {
         return {
           entity: {
             contract_address
           },
           update: {
-            ...baseData,
             contract_address,
             id: transactionHash,
             last_updated: timestamp,

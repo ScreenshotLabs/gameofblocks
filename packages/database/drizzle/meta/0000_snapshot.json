@@ -1,5 +1,5 @@
 {
-  "id": "b48b960e-b5b4-4da5-8e19-2ecabce58a70",
+  "id": "77728b14-9015-45b4-9837-1f428115ee95",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,10 +10,9 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
+          "notNull": true
         },
         "base_health": {
           "name": "base_health",
@@ -54,6 +53,12 @@
       "name": "player_bosses",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
         "player_id": {
           "name": "player_id",
           "type": "varchar",
@@ -62,7 +67,7 @@
         },
         "boss_id": {
           "name": "boss_id",
-          "type": "uuid",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -87,49 +92,14 @@
         },
         "_cursor": {
           "name": "_cursor",
-          "type": "bigint",
+          "type": "int8range",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "player_bosses_player_id_players_id_fk": {
-          "name": "player_bosses_player_id_players_id_fk",
-          "tableFrom": "player_bosses",
-          "tableTo": "players",
-          "columnsFrom": [
-            "player_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "player_bosses_boss_id_bosses_id_fk": {
-          "name": "player_bosses_boss_id_bosses_id_fk",
-          "tableFrom": "player_bosses",
-          "tableTo": "bosses",
-          "columnsFrom": [
-            "boss_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "player_bosses_player_id_boss_id_pk": {
-          "name": "player_bosses_player_id_boss_id_pk",
-          "columns": [
-            "player_id",
-            "boss_id"
-          ]
-        }
-      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -240,15 +210,7 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "players_id_unique": {
-          "name": "players_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

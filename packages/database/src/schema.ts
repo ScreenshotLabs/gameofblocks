@@ -1,5 +1,4 @@
 import { pgTable, varchar, timestamp, bigint, integer, boolean, primaryKey, customType, uuid } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
 
 const int8range = customType<{ data: string; driverData: string }>({
   dataType() {
@@ -7,18 +6,16 @@ const int8range = customType<{ data: string; driverData: string }>({
   },
 });
 
-// First, we'll keep bosses with UUID to maintain compatibility
 export const bosses = pgTable("bosses", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id").primaryKey(),
   baseHealth: integer("base_health").notNull(),
   isActive: boolean("is_active").notNull().default(true),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
   _cursor: bigint("_cursor", { mode: "number" }).notNull(),
 });
 
-// Players can use varchar since it's new
 export const players = pgTable("players", {
-  id: varchar("id").primaryKey().unique(),
+  id: varchar("id").primaryKey(),
   contractAddress: varchar("contract_address"),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
   _cursor: int8range("_cursor").notNull(),
@@ -40,34 +37,12 @@ export const players = pgTable("players", {
   action_type: varchar("action_type"),
 });
 
-// Keep the relationship table consistent with the parent tables
 export const playerBosses = pgTable("player_bosses", {
-  playerId: varchar("player_id").notNull().references(() => players.id),
-  bossId: uuid("boss_id").notNull().references(() => bosses.id),
+  id: varchar("id").primaryKey(),
+  playerId: varchar("player_id").notNull(),
+  bossId: varchar("boss_id").notNull(), // Removed reference to bosses table
   currentHealth: integer("current_health").notNull(),
   isDefeated: boolean("is_defeated").notNull(),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
-  _cursor: bigint("_cursor", { mode: "number" }).notNull(),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.playerId, table.bossId] })
-}));
-
-// Relations configuration
-export const playersRelations = relations(players, ({ many }) => ({
-  playerBosses: many(playerBosses)
-}));
-
-export const bossesRelations = relations(bosses, ({ many }) => ({
-  playerBosses: many(playerBosses)
-}));
-
-export const playerBossesRelations = relations(playerBosses, ({ one }) => ({
-  player: one(players, {
-    fields: [playerBosses.playerId],
-    references: [players.id],
-  }),
-  boss: one(bosses, {
-    fields: [playerBosses.bossId],
-    references: [bosses.id],
-  }),
-}));
+  _cursor: int8range("_cursor").notNull(),
+});

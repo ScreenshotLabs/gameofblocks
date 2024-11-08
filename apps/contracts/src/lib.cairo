@@ -18,6 +18,7 @@ mod game {
         BossDefeated: BossDefeated,
         PlayerUpgraded: PlayerUpgraded,
         GoldEarned: GoldEarned,
+        BossCreated: BossCreated,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -74,6 +75,13 @@ mod game {
         total_gold: u128,
     }
 
+    #[derive(Drop, starknet::Event)]
+    struct BossCreated {
+        #[key]
+        boss_id: u32,
+        health: u32,
+    }
+
     #[storage]
     struct Storage {
         // Player data
@@ -112,9 +120,9 @@ mod game {
 
             // Initialize player base stats
             self.player_exists.write(player, true);
-            self.player_attack_power.write(player, 100); // Starting with 100 attack power
+            self.player_attack_power.write(player, 1);
             self.player_energy_cap.write(player, 3000);
-            self.player_energy_recovery.write(player, 10); // Starting with 10 recovery
+            self.player_energy_recovery.write(player, 10);
             self.player_current_boss.write(player, 1);
 
             // Initialize economy stats
@@ -212,7 +220,14 @@ mod game {
 
                 // Emit events
                 self.emit(Event::BossDefeated(BossDefeated { player, boss_id: current_boss }));
-                self.emit(Event::GoldEarned(GoldEarned { player, amount: gold_earned, total_gold: current_gold + gold_earned }));
+                self
+                    .emit(
+                        Event::GoldEarned(
+                            GoldEarned {
+                                player, amount: gold_earned, total_gold: current_gold + gold_earned
+                            }
+                        )
+                    );
             }
         }
 
@@ -230,7 +245,7 @@ mod game {
             self.player_gold.write(player, current_gold - cost);
             self.player_attack_level.write(player, current_level + 1);
 
-            let new_attack = self.player_attack_power.read(player) + 100;
+            let new_attack = self.player_attack_power.read(player) + 1;
             self.player_attack_power.write(player, new_attack);
 
             self
@@ -333,6 +348,7 @@ mod game {
             self.boss_base_health.write(boss_id, base_health);
             self.boss_is_active.write(boss_id, true);
             self.next_boss_id.write(boss_id + 1);
+            self.emit(Event::BossCreated(BossCreated { boss_id: boss_id, health: base_health }));
         }
 
         fn set_admin(ref self: ContractState, address: ContractAddress, is_admin: bool) {

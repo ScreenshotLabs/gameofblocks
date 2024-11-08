@@ -9,14 +9,12 @@ export default defineConfig({
   schema: "./src/schema.ts",
   out: "./drizzle",
   
-  // Fixed dbCredentials to use the correct type
   dbCredentials: {
     host: process.env.POSTGRES_HOST || 'localhost',
     port: process.env.POSTGRES_PORT ? parseInt(process.env.POSTGRES_PORT) : 5432,
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB || 'postgres',
-    // Optional: SSL configuration if needed
     ssl: process.env.DB_SSL === 'true'
   },
 
