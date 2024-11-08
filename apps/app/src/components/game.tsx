@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import useGame from "@/hooks/use-game";
 import { GameState } from "@/types/game";
 
+import BossImage from "./boss-animation";
 import GameFooter from "./game-footer";
 import GameHeader from "./game-header";
 import InteractiveZone from "./interactive-zone";
@@ -10,8 +12,19 @@ import Lifebar from "./lifebar";
 import Loader from "./loader";
 import TopBar from "./top-bar";
 
-export default function Game() {
+export default function Game(): JSX.Element {
   const { gameState, isServiceWorking, handleAttack, boss, player } = useGame();
+  const [isAttacking, setIsAttacking] = useState<boolean>(false);
+
+  const handleBossAttack = async (): Promise<void> => {
+    setIsAttacking(true);
+    await handleAttack();
+    
+    // Reset attack state after a very short delay
+    setTimeout(() => {
+      setIsAttacking(false);
+    }, 10);
+  };
 
   if (!isServiceWorking) {
     return (
@@ -39,9 +52,11 @@ export default function Game() {
         </div>
         <InteractiveZone
           playerDamage={player.damage}
-          className="h-[400px] border-2 border-white"
-          onInteraction={handleAttack}
-        />
+          className="h-[400px] w-full"
+          onInteraction={handleBossAttack}
+        >
+          <BossImage isAttacking={isAttacking} />
+        </InteractiveZone>
         <GameFooter />
       </div>
     </div>
