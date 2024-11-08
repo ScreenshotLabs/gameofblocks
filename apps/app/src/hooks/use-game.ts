@@ -123,12 +123,12 @@ export default function useGame() {
 
   return {
     gameState,
-    baseHealth,
-    currentHealth,
     isServiceWorking,
     handleAttack,
     boss: {
       name: bossName,
+      baseHealth,
+      currentHealth,
     },
   };
 }

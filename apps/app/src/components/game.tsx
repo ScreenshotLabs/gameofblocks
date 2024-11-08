@@ -11,14 +11,7 @@ import Loader from "./loader";
 import TopBar from "./top-bar";
 
 export default function Game() {
-  const {
-    baseHealth,
-    currentHealth,
-    gameState,
-    isServiceWorking,
-    handleAttack,
-    boss,
-  } = useGame();
+  const { gameState, isServiceWorking, handleAttack, boss } = useGame();
 
   if (!isServiceWorking) {
     return (
@@ -39,7 +32,10 @@ export default function Game() {
           {boss.name}
         </div>
         <div className="flex justify-center">
-          <Lifebar max={baseHealth ?? 1000} value={currentHealth ?? 0} />
+          <Lifebar
+            max={boss.baseHealth ?? 1000}
+            value={boss.currentHealth ?? 0}
+          />
         </div>
         <InteractiveZone
           className="h-[400px] border-2 border-white"
