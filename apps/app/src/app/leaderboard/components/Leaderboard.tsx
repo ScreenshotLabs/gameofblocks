@@ -1,20 +1,6 @@
 "use client";
 
 export default function Leaderboard() {
-  /*   useEffect(() => {
-    async function init() {
-      const response = await fetch("/api/leaderboard", {
-        method: "GET",
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const data: LeaderboardResult = await response.json();
-      console.log(data);
-    }
-
-    void init();
-  }, []); */
-
   return (
     <div className="p-4">
       <div className="flex gap-4">
