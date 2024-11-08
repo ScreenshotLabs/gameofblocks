@@ -103,7 +103,13 @@ export default function Game() {
         break;
 
       case GameState.LAUNCHED:
-        void initPlayer();
+        if (data.isInitializationRequired) {
+          void initPlayer();
+        } else {
+          setCurrentHealth(Number(data.boss.currentHealth));
+          setBaseHealth(Number(data.boss.baseHealth));
+          setGameState(GameState.INITIALIZED);
+        }
         break;
     }
 
