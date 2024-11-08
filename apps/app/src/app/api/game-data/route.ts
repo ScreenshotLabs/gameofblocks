@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       recovery: recovery.toString(),
     },
     boss: {
-      id: bossId.toString(),
+      id: Number(bossId),
       currentHealth: currentHealth.toString(),
       isDefeated,
       baseHealth: baseHealth.toString(),
