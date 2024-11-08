@@ -53,7 +53,7 @@ export default function useGame() {
 
   const handleAttack = async () => {
     setCurrentHealth(
-      (prevValue) => (prevValue ?? 0) - (data?.player.attack ?? 1),
+      (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
     );
     try {
       await playerAttack();
