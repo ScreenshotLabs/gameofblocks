@@ -1,0 +1,268 @@
+{
+  "id": "b48b960e-b5b4-4da5-8e19-2ecabce58a70",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.bosses": {
+      "name": "bosses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "base_health": {
+          "name": "base_health",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "last_updated": {
+          "name": "last_updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_cursor": {
+          "name": "_cursor",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.player_bosses": {
+      "name": "player_bosses",
+      "schema": "",
+      "columns": {
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boss_id": {
+          "name": "boss_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "current_health": {
+          "name": "current_health",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_defeated": {
+          "name": "is_defeated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_updated": {
+          "name": "last_updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_cursor": {
+          "name": "_cursor",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "player_bosses_player_id_players_id_fk": {
+          "name": "player_bosses_player_id_players_id_fk",
+          "tableFrom": "player_bosses",
+          "tableTo": "players",
+          "columnsFrom": [
+            "player_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_bosses_boss_id_bosses_id_fk": {
+          "name": "player_bosses_boss_id_bosses_id_fk",
+          "tableFrom": "player_bosses",
+          "tableTo": "bosses",
+          "columnsFrom": [
+            "boss_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "player_bosses_player_id_boss_id_pk": {
+          "name": "player_bosses_player_id_boss_id_pk",
+          "columns": [
+            "player_id",
+            "boss_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.players": {
+      "name": "players",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "contract_address": {
+          "name": "contract_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_updated": {
+          "name": "last_updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "_cursor": {
+          "name": "_cursor",
+          "type": "int8range",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attack_power": {
+          "name": "attack_power",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "energy_cap": {
+          "name": "energy_cap",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "energy_recovery": {
+          "name": "energy_recovery",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "current_boss_id": {
+          "name": "current_boss_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gold_earned": {
+          "name": "gold_earned",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gold_spent": {
+          "name": "gold_spent",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_gold": {
+          "name": "total_gold",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attack_level": {
+          "name": "attack_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "energy_level": {
+          "name": "energy_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recovery_level": {
+          "name": "recovery_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "upgrade_type": {
+          "name": "upgrade_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "action_type": {
+          "name": "action_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "players_id_unique": {
+          "name": "players_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

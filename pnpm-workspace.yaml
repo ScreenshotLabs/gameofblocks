@@ -2,7 +2,9 @@ packages:
   - apps/*
   - packages/*
   - tooling/*
-
+  - '!apps/deployer'
+  - '!apps/contracts'
+  - '!apps/indexer'
 catalog:
   eslint: ^9.6.0
   prettier: ^3.3.2

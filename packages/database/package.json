@@ -1,0 +1,28 @@
+{
+  "name": "@gameofblocks/database",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "prisma",
+    "generated"
+  ],
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.2",
+    "@types/pg": "^8.10.9",
+    "drizzle-kit": "^0.27.1",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.2"
+  }
+}

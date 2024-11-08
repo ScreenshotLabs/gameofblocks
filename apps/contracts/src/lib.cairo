@@ -2,6 +2,7 @@ use starknet::ContractAddress;
 
 #[starknet::contract]
 mod game {
+    use starknet::event::EventEmitter;
     use core::starknet::storage::{
         StoragePointerReadAccess, StoragePointerWriteAccess, StorageMapReadAccess,
         StorageMapWriteAccess, Map
@@ -12,6 +13,7 @@ mod game {
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
+        PlayerCreated: PlayerCreated,
         BossAttacked: BossAttacked,
         BossDefeated: BossDefeated,
         PlayerUpgraded: PlayerUpgraded,
@@ -35,10 +37,33 @@ mod game {
     }
 
     #[derive(Drop, starknet::Event)]
+    struct PlayerCreated {
+        #[key]
+        player: ContractAddress,
+        attack_power: u32,
+        energy_cap: u32,
+        energy_recovery: u32,
+        attack_level: u32,
+        energy_level: u32,
+        recovery_level: u32,
+        current_boss: u32,
+        gold: u128,
+    }
+
+    #[derive(Drop, starknet::Event)]
     struct PlayerUpgraded {
         #[key]
         player: ContractAddress,
         upgrade_type: u8,
+        attack_power: u32,
+        energy_cap: u32,
+        energy_recovery: u32,
+        attack_level: u32,
+        energy_level: u32,
+        recovery_level: u32,
+        current_boss: u32,
+        gold: u128,
+        upgrade_cost: u128,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -46,6 +71,7 @@ mod game {
         #[key]
         player: ContractAddress,
         amount: u128,
+        total_gold: u128,
     }
 
     #[storage]
@@ -56,21 +82,18 @@ mod game {
         player_energy_recovery: Map::<ContractAddress, u32>,
         player_current_boss: Map::<ContractAddress, u32>,
         player_exists: Map::<ContractAddress, bool>,
-        
         // Economy data
         player_gold: Map::<ContractAddress, u128>,
         player_attack_level: Map::<ContractAddress, u32>,
         player_energy_level: Map::<ContractAddress, u32>,
         player_recovery_level: Map::<ContractAddress, u32>,
         player_last_energy_update: Map::<ContractAddress, u64>,
-
         // Boss data
         boss_base_health: Map::<u32, u32>,
         boss_is_active: Map::<u32, bool>,
         next_boss_id: u32,
         boss_current_health: Map::<(ContractAddress, u32), u32>,
         boss_is_defeated: Map::<(ContractAddress, u32), bool>,
-
         // Admin
         is_admin: Map::<ContractAddress, bool>,
     }
@@ -106,6 +129,23 @@ mod game {
             let boss_health = self.boss_base_health.read(1);
             self.boss_current_health.write((player, 1), boss_health);
             self.boss_is_defeated.write((player, 1), false);
+
+            self
+                .emit(
+                    Event::PlayerCreated(
+                        PlayerCreated {
+                            player,
+                            attack_power: 100,
+                            energy_cap: 3000,
+                            energy_recovery: 10,
+                            attack_level: 1,
+                            energy_level: 1,
+                            recovery_level: 1,
+                            current_boss: 1,
+                            gold: 0,
+                        }
+                    )
+                );
         }
 
         fn attack_boss(ref self: ContractState) {
@@ -131,15 +171,25 @@ mod game {
                 self.player_gold.write(player, current_gold + gold_earned);
 
                 // Emit events
-                self.emit(Event::BossAttacked(
-                    BossAttacked {
-                        player,
-                        boss_id: current_boss,
-                        damage_dealt: attack_power,
-                        health_remaining: boss_health
-                    }
-                ));
-                self.emit(Event::GoldEarned(GoldEarned { player, amount: gold_earned }));
+                self
+                    .emit(
+                        Event::BossAttacked(
+                            BossAttacked {
+                                player,
+                                boss_id: current_boss,
+                                damage_dealt: attack_power,
+                                health_remaining: boss_health
+                            }
+                        )
+                    );
+                self
+                    .emit(
+                        Event::GoldEarned(
+                            GoldEarned {
+                                player, amount: gold_earned, total_gold: current_gold + gold_earned
+                            }
+                        )
+                    );
             } else {
                 // Boss defeated
                 self.boss_is_defeated.write((player, current_boss), true);
@@ -162,7 +212,7 @@ mod game {
 
                 // Emit events
                 self.emit(Event::BossDefeated(BossDefeated { player, boss_id: current_boss }));
-                self.emit(Event::GoldEarned(GoldEarned { player, amount: gold_earned }));
+                self.emit(Event::GoldEarned(GoldEarned { player, amount: gold_earned, total_gold: current_gold + gold_earned }));
             }
         }
 
@@ -172,16 +222,35 @@ mod game {
 
             let current_level = self.player_attack_level.read(player);
             let cost = _calculate_upgrade_cost(100, current_level);
-            
+
             let current_gold = self.player_gold.read(player);
             assert(current_gold >= cost, 'Insufficient gold');
 
             // Apply upgrade
             self.player_gold.write(player, current_gold - cost);
             self.player_attack_level.write(player, current_level + 1);
-            self.player_attack_power.write(player, self.player_attack_power.read(player) + 100);
 
-            self.emit(Event::PlayerUpgraded(PlayerUpgraded { player, upgrade_type: 1 }));
+            let new_attack = self.player_attack_power.read(player) + 100;
+            self.player_attack_power.write(player, new_attack);
+
+            self
+                .emit(
+                    Event::PlayerUpgraded(
+                        PlayerUpgraded {
+                            player,
+                            upgrade_type: 1,
+                            attack_power: new_attack,
+                            energy_cap: self.player_energy_cap.read(player),
+                            energy_recovery: self.player_energy_recovery.read(player),
+                            attack_level: current_level + 1,
+                            energy_level: self.player_energy_level.read(player),
+                            recovery_level: self.player_recovery_level.read(player),
+                            current_boss: self.player_current_boss.read(player),
+                            gold: current_gold - cost,
+                            upgrade_cost: cost,
+                        }
+                    )
+                );
         }
 
         fn upgrade_energy_cap(ref self: ContractState) {
@@ -190,16 +259,34 @@ mod game {
 
             let current_level = self.player_energy_level.read(player);
             let cost = _calculate_upgrade_cost(150, current_level);
-            
+
             let current_gold = self.player_gold.read(player);
             assert(current_gold >= cost, 'Insufficient gold');
 
             // Apply upgrade
             self.player_gold.write(player, current_gold - cost);
             self.player_energy_level.write(player, current_level + 1);
-            self.player_energy_cap.write(player, self.player_energy_cap.read(player) + 1000);
+            let new_energy_cap = self.player_energy_cap.read(player) + 1000;
+            self.player_energy_cap.write(player, new_energy_cap);
 
-            self.emit(Event::PlayerUpgraded(PlayerUpgraded { player, upgrade_type: 2 }));
+            self
+                .emit(
+                    Event::PlayerUpgraded(
+                        PlayerUpgraded {
+                            player,
+                            upgrade_type: 2,
+                            attack_power: self.player_attack_power.read(player),
+                            energy_cap: new_energy_cap,
+                            energy_recovery: self.player_energy_recovery.read(player),
+                            attack_level: self.player_attack_level.read(player),
+                            energy_level: current_level + 1,
+                            recovery_level: self.player_recovery_level.read(player),
+                            current_boss: self.player_current_boss.read(player),
+                            gold: current_gold - cost,
+                            upgrade_cost: cost,
+                        }
+                    )
+                );
         }
 
         fn upgrade_energy_recovery(ref self: ContractState) {
@@ -208,16 +295,34 @@ mod game {
 
             let current_level = self.player_recovery_level.read(player);
             let cost = _calculate_upgrade_cost(200, current_level);
-            
+
             let current_gold = self.player_gold.read(player);
             assert(current_gold >= cost, 'Insufficient gold');
 
             // Apply upgrade
             self.player_gold.write(player, current_gold - cost);
             self.player_recovery_level.write(player, current_level + 1);
-            self.player_energy_recovery.write(player, self.player_energy_recovery.read(player) + 10);
+            let new_recovery = self.player_energy_recovery.read(player) + 10;
+            self.player_energy_recovery.write(player, new_recovery);
 
-            self.emit(Event::PlayerUpgraded(PlayerUpgraded { player, upgrade_type: 3 }));
+            self
+                .emit(
+                    Event::PlayerUpgraded(
+                        PlayerUpgraded {
+                            player,
+                            upgrade_type: 3,
+                            attack_power: self.player_attack_power.read(player),
+                            energy_cap: self.player_energy_cap.read(player),
+                            energy_recovery: new_recovery,
+                            attack_level: self.player_attack_level.read(player),
+                            energy_level: self.player_energy_level.read(player),
+                            recovery_level: current_level + 1,
+                            current_boss: self.player_current_boss.read(player),
+                            gold: current_gold - cost,
+                            upgrade_cost: cost,
+                        }
+                    )
+                );
         }
 
         fn add_boss(ref self: ContractState, base_health: u32) {
@@ -295,7 +400,7 @@ mod game {
 
             let current_health = self.boss_current_health.read((player, boss_id));
             let is_defeated = self.boss_is_defeated.read((player, boss_id));
-            
+
             (current_health, is_defeated)
         }
 
@@ -308,7 +413,7 @@ mod game {
         let multiplier: u128 = 26000; // 2.6 in basis points
         let mut cost = base_price;
         let mut level = 1;
-        
+
         while level < current_level {
             cost = (cost * multiplier) / 10000;
             level += 1;
