@@ -36,6 +36,67 @@ export const useGaslessService = (params: GaslessServiceParams) => {
     void checkServiceStatusAsync();
   }, [gaslessService]);
 
+  async function playerAttack() {
+    try {
+      if (!gaslessService) {
+        throw new Error("Gasless service is not available");
+      }
+
+      console.log(`Player {address} is attacking...`);
+
+      if (!address || !privateKey || !publicKey) {
+        throw new Error("Missing account information");
+      }
+
+      const tokenPrices = await gaslessService.getTokenPrices();
+      if (tokenPrices.length === 0) {
+        throw new Error("No token prices found.");
+      }
+
+      const calls: Call[] = [
+        {
+          entrypoint: "attack_boss",
+          contractAddress: CONTRACT_ADDRESS,
+          calldata: [],
+        },
+      ];
+
+      const typedData = await buildTypedData({
+        accountAddress: address,
+        accountClassHash: ARGENT_ACCOUNT_CLASSHASH,
+        calls,
+        gasTokenAddress: tokenPrices[0].tokenAddress,
+        network: gaslessService.network,
+      });
+
+      const transactionExecutionData =
+        await gaslessService.getExecutionTransactionData(
+          address,
+          privateKey,
+          typedData,
+        );
+
+      const signature =
+        transactionExecutionData.signature as WeierstrassSignatureType;
+
+      console.log("Signature (client)", signature);
+
+      const invokeResponse = await executeTransaction({
+        accountAddress: address,
+        typedData: JSON.stringify(typedData),
+        signatureS: signature.s.toString(),
+        signatureR: signature.r.toString(),
+        network: gaslessService.network,
+      });
+
+      console.log("=> invokeResponse", invokeResponse);
+      setTransactions((prev) => [...prev, invokeResponse.transactionHash]);
+    } catch (error) {
+      handleErrors(error);
+      throw error;
+    }
+  }
+
   async function spawnPlayer() {
     try {
       if (!gaslessService) {
@@ -134,6 +195,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
     clearError,
     transactions,
     spawnPlayer,
+    playerAttack,
     network: gaslessService?.network,
   };
 };

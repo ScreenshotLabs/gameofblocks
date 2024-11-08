@@ -11,7 +11,7 @@ import Loader from "./loader";
 import TopBar from "./top-bar";
 
 export default function Game() {
-  const { gameState, isServiceWorking, handleAttack, boss } = useGame();
+  const { gameState, isServiceWorking, handleAttack, boss, player } = useGame();
 
   if (!isServiceWorking) {
     return (
@@ -38,6 +38,7 @@ export default function Game() {
           />
         </div>
         <InteractiveZone
+          playerDamage={player.damage}
           className="h-[400px] border-2 border-white"
           onInteraction={handleAttack}
         />

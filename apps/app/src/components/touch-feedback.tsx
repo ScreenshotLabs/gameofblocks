@@ -1,4 +1,12 @@
-export default function TouchFeedback({ x, y }: { x: number; y: number }) {
+export default function TouchFeedback({
+  playerDamage,
+  x,
+  y,
+}: {
+  playerDamage: number;
+  x: number;
+  y: number;
+}) {
   return (
     <div
       className="animate-rise pointer-events-none absolute z-30 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 font-bold opacity-50"
@@ -7,7 +15,7 @@ export default function TouchFeedback({ x, y }: { x: number; y: number }) {
         top: y - 16,
       }}
     >
-      -1
+      {`-${playerDamage}`}
     </div>
   );
 }

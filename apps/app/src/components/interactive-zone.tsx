@@ -16,11 +16,13 @@ export default function InteractiveZone({
   className,
   children,
   onInteraction,
+  playerDamage,
 }: {
   className?: string;
   children?: React.ReactNode;
   onInteraction?: () => void;
   reactionElement?: React.Component;
+  playerDamage: number;
 }) {
   const [elements, setElements] = useState<AnimatedElement[]>([]);
 
@@ -62,7 +64,12 @@ export default function InteractiveZone({
       </div>
       <div className="absolute bottom-0 left-0 right-0 top-0 z-0">
         {elements.map((element) => (
-          <TouchFeedback x={element.x} y={element.y} key={element.id} />
+          <TouchFeedback
+            playerDamage={playerDamage}
+            x={element.x}
+            y={element.y}
+            key={element.id}
+          />
         ))}
       </div>
     </>

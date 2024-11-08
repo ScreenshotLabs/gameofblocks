@@ -9,7 +9,7 @@ import useAccount from "./useAccount";
 
 export default function useGame() {
   const { account, privateKey, publicKey } = useAccount();
-  const { isServiceWorking, spawnPlayer } = useGaslessService({
+  const { isServiceWorking, spawnPlayer, playerAttack } = useGaslessService({
     address: account?.address,
     publicKey,
     privateKey,
@@ -51,8 +51,15 @@ export default function useGame() {
     enabled: queryIsEnabled,
   });
 
-  const handleAttack = () => {
-    setCurrentHealth((prevValue) => (prevValue ?? 0) - 1);
+  const handleAttack = async () => {
+    setCurrentHealth(
+      (prevValue) => (prevValue ?? 0) - (data?.player.attack ?? 1),
+    );
+    try {
+      await playerAttack();
+    } catch (error) {
+      console.error("Attack failed:", error);
+    }
   };
 
   useEffect(() => {
@@ -119,12 +126,15 @@ export default function useGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const bossName = data ? BOSSES[Number(data.boss.id)].name : undefined;
+  const bossName = data ? BOSSES[data.boss.id]?.name || "" : "";
 
   return {
     gameState,
     isServiceWorking,
     handleAttack,
+    player: {
+      damage: data?.player.attack ?? 100,
+    },
     boss: {
       name: bossName,
       baseHealth,

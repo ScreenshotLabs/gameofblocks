@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
   const result: GameDataResult = {
     isInitializationRequired: !playerExists,
     player: {
-      attack: attack.toString(),
+      attack: Number(attack),
       energyCap: energyCap.toString(),
       recovery: recovery.toString(),
     },
