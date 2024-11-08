@@ -31,5 +31,5 @@ export function Page({
     });
   }, [router]);
 
-  return <>{children}</>;
+  return <div className="">{children}</div>;
 }
