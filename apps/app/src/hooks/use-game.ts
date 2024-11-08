@@ -53,7 +53,7 @@ export default function useGame() {
 
   const handleAttack = async () => {
     setCurrentHealth(
-      (prevValue) => (prevValue ?? 0) - (data?.player.attack ?? 1),
+      (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
     );
     try {
       await playerAttack();
@@ -96,8 +96,8 @@ export default function useGame() {
         );
         if (!data.isInitializationRequired) {
           console.log("Initialization not required, setting health and state.");
-          setCurrentHealth(Number(data.boss.currentHealth ?? 10000));
-          setBaseHealth(Number(data.boss.baseHealth ?? 10000));
+          setCurrentHealth(Number(data.boss?.currentHealth ?? 10000));
+          setBaseHealth(Number(data.boss?.baseHealth ?? 10000));
           setGameState(GameState.INITIALIZED);
         }
 
@@ -116,8 +116,8 @@ export default function useGame() {
           console.log(
             "Initialization not required, setting health and state directly.",
           );
-          setCurrentHealth(Number(data.boss.currentHealth ?? 10000));
-          setBaseHealth(Number(data.boss.baseHealth ?? 10000));
+          setCurrentHealth(Number(data.boss?.currentHealth ?? 10000));
+          setBaseHealth(Number(data.boss?.baseHealth ?? 10000));
           setGameState(GameState.INITIALIZED);
         }
         break;
@@ -125,14 +125,14 @@ export default function useGame() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-  const bossName = data?.boss.id ? BOSSES[data.boss.id]?.name || "" : "";
+  const bossName = data?.boss?.id ? BOSSES[data.boss.id]?.name || "" : "";
 
   return {
     gameState,
     isServiceWorking,
     handleAttack,
     player: {
-      damage: data?.player.attack ?? 1,
+      damage: data?.player?.attack ?? 1,
     },
     boss: {
       name: bossName,
