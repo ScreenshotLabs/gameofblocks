@@ -3,6 +3,7 @@
 import { useState } from "react";
 import useGame from "@/hooks/use-game";
 import { GameState } from "@/types/game";
+import { set } from "zod";
 
 import BossImage from "./boss-animation";
 import GameFooter from "./game-footer";
@@ -14,16 +15,22 @@ import TopBar from "./top-bar";
 
 export default function Game(): JSX.Element {
   const { gameState, isServiceWorking, handleAttack, boss, player } = useGame();
-  const [isAttacking, setIsAttacking] = useState<boolean>(false);
+  const [isRotating, setIsRotating] = useState<boolean>(false);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
-  const handleBossAttack = async (): Promise<void> => {
-    setIsAttacking(true);
-    await handleAttack();
-    
-    // Reset attack state after a very short delay
-    setTimeout(() => {
-      setIsAttacking(false);
-    }, 10);
+  const handleBossAttack = (): Promise<void> => {
+    console.log("handleBossAttack");
+    console.log("isAnimating", isAnimating);
+    if (!isAnimating) {
+      setIsAnimating(true);
+      setIsRotating(true);
+      setTimeout(() => {
+        setIsRotating(false);
+        setIsAnimating(false);
+      }, 300);
+      handleAttack();
+    }
+    return Promise.resolve();
   };
 
   if (!isServiceWorking) {
@@ -55,7 +62,12 @@ export default function Game(): JSX.Element {
           className="h-[400px] w-full"
           onInteraction={handleBossAttack}
         >
-          <BossImage isAttacking={isAttacking} />
+          <BossImage
+            isRotating={isRotating}
+            isAnimating={isAnimating}
+            width={300}
+            height={300}
+          />
         </InteractiveZone>
         <GameFooter />
       </div>

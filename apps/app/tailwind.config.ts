@@ -84,7 +84,14 @@ const config: Config = {
           },
         },
       },
+      rotate: {
+        '10': '10deg',
+      },
       keyframes: {
+        "wiggle": {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '50%': { transform: 'rotate(10deg)' },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -108,6 +115,7 @@ const config: Config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         rise: "rise 2s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+        wiggle: 'wiggle 300ms ease-in-out',
       },
     },
   },

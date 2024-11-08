@@ -24,17 +24,17 @@ export default function useGame() {
     ([GameState.LAUNCHED, GameState.INITIALIZING].includes(gameState) ||
       (currentHealth !== undefined && currentHealth <= 0));
 
-  const { data, error, isLoading, refetch } = useQuery({
+  const { data } = useQuery({
     queryKey: ["game-data"],
     queryFn: async () => {
       const response = await fetch(
         `/api/game-data?address=${account?.address}`,
         {
           method: "GET",
-          headers: {
-            // TODO
-            // Authorization: `tma ${launchParams.initDataRaw}`,
-          },
+          // headers: {
+          // TODO
+          // Authorization: `tma ${launchParams.initDataRaw}`,
+          // },
         },
       );
 
@@ -47,18 +47,29 @@ export default function useGame() {
       const data = (await response.json()) as GameDataResult;
       return data;
     },
-    refetchInterval: 1000,
+    refetchInterval: 100,
     enabled: queryIsEnabled,
   });
 
-  const handleAttack = async () => {
+  const handleAttack = () => {
     setCurrentHealth(
       (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
     );
     try {
-      await playerAttack();
+      // Update health immediately for UI feedback
+      setCurrentHealth(
+        (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
+      );
+
+      // Start the playerAttack but don't wait for it
+      // This will allow the animation to complete independently
+      void playerAttack().catch(error => {
+        console.error("Attack failed:", error);
+        // Optionally rollback the health change if attack fails
+        setCurrentHealth(prevValue => (prevValue ?? 0) + (data?.player?.attack ?? 1));
+      });
     } catch (error) {
-      console.error("Attack failed:", error);
+      console.error("Unexpected error:", error);
     }
   };
 
@@ -127,10 +138,9 @@ export default function useGame() {
         }
         break;
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-  const bossName = data?.boss?.id ? BOSSES[data.boss.id]?.name || "" : "";
+  const bossName = data?.boss?.id ? BOSSES[data.boss.id].name || "" : "";
 
   return {
     gameState,

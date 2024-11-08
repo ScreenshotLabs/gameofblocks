@@ -1,47 +1,45 @@
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import Image from "next/image";
 
 interface BossImageProps {
-  isAttacking: boolean;
+  isRotating: boolean;
+  isAnimating: boolean;
   width?: number;
   height?: number;
   className?: string;
 }
 
-const BossImage: React.FC<BossImageProps> = ({ 
-  isAttacking, 
-  width = 300, 
+const BossImage: React.FC<BossImageProps> = ({
+  isRotating,
+  isAnimating,
+  width = 300,
   height = 300,
-  className = ""
+  className = "",
 }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    if (isAttacking && isAnimating === false) {
-      setIsAnimating(true);
-      
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 100);
-    }
-  }, [isAttacking, isAnimating]);
-
   return (
-    <div className={`absolute top-0 w-full flex justify-center ${className}`}>
-      <div 
-        className={`transition-transform duration-50 ${
-          isAnimating 
-            ? '-rotate-3 transform' 
-            :  'rotate-0 transform'
+    <div className={`absolute top-0 flex w-full justify-center ${className}`}>
+      <div
+        className={`relative ${isAnimating ? "pointer-events-none" : ""} ${
+          isRotating ? "animate-wiggle" : ""
         }`}
       >
+        {/* Base image with smooth fade */}
         <Image
-          src={isAnimating ? '/images/boss-hit.svg' : '/images/boss.svg'}
+          src="/images/boss.svg"
           alt="Boss"
           width={width}
           height={height}
-          className="transition-opacity duration-50"
           priority
+        />
+        {/* Attack image with smooth fade */}
+        <Image
+          src="/images/boss-hit.svg"
+          alt="Boss Attack"
+          width={width}
+          height={height}
+          priority
+          className={`absolute left-0 top-0 transform-gpu transition-all duration-150 ease-in-out ${
+            isAnimating ? "opacity-100" : "opacity-0"
+          }`}
         />
       </div>
     </div>
