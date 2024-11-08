@@ -18,6 +18,8 @@ export interface GameDataResult {
     energyCap: string;
     recovery: string;
   };
+  gold: number;
+  level: number;
 }
 
 export interface PaymentResponse {

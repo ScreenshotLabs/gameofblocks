@@ -33,9 +33,11 @@ export async function GET(req: NextRequest) {
 
   const bossIdStr = (await contract.get_player_current_boss(address)) as string;
   const bossId = BigInt(bossIdStr);
-  const rawBossInfo = (await contract.get_boss_info(bossIdStr)) as string[];
 
-  console.log("=> rawBossInfo", rawBossInfo);
+  const rawGold = await contract.get_player_gold(address);
+  const gold = BigInt(rawGold);
+
+  const rawBossInfo = (await contract.get_boss_info(bossIdStr)) as string[];
 
   const baseHealth = BigInt(rawBossInfo[0]);
   // const isActive: boolean = rawBossInfo[1];
@@ -61,6 +63,8 @@ export async function GET(req: NextRequest) {
       isDefeated,
       baseHealth: baseHealth.toString(),
     },
+    gold: Number(gold),
+    level: 0,
   };
 
   return NextResponse.json(result, { status: 200 });

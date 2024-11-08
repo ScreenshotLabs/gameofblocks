@@ -144,5 +144,7 @@ export default function useGame() {
       baseHealth,
       currentHealth,
     },
+    gold: data?.gold ?? 0,
+    level: data?.level ?? 1,
   };
 }
