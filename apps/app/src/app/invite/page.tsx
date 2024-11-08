@@ -3,13 +3,13 @@ import GameHeader from "@/components/game-header";
 import { Page } from "@/components/page";
 import { PageTitle } from "@/components/page-title";
 
-export default function ShopPage() {
+export default function InvitePage() {
   return (
     <Page back>
       <GameHeader />
-      <PageTitle>Shop</PageTitle>
+      <PageTitle>Invite</PageTitle>
       <div className="flex h-full flex-col items-center justify-center">
-        <p>Shop devastative special ability + 500,000G!</p>
+        <p>Invite your friends to play the game!</p>
       </div>
       <GameFooter />
     </Page>

@@ -4,18 +4,12 @@ import type { PropsWithChildren } from "react";
 import { useEffect } from "react";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { ErrorPage } from "@/components/error-page";
-import { setLocale } from "@/core/i18n/locale";
 import { init } from "@/core/init";
 import { env } from "@/env";
 import { useClientOnce } from "@/hooks/useClientOnce";
 import { useDidMount } from "@/hooks/useDidMount";
 import { useTelegramMock } from "@/hooks/useTelegramMock";
-import {
-  initData,
-  miniApp,
-  useLaunchParams,
-  useSignal,
-} from "@telegram-apps/sdk-react";
+import { miniApp, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 
@@ -39,16 +33,16 @@ function RootInner({ children }: PropsWithChildren) {
   });
 
   const isDark = useSignal(miniApp.isDark);
-  const initDataUser = useSignal(initData.user);
+  // const initDataUser = useSignal(initData.user);
 
   // Set the user locale.
-  useEffect(() => {
-    initDataUser && setLocale(initDataUser.languageCode);
-  }, [initDataUser]);
+  // useEffect(() => {
+  //   initDataUser && setLocale(initDataUser.languageCode);
+  // }, [initDataUser]);
 
   // Enable debug mode to see all the methods sent and events received.
   useEffect(() => {
-    debug && import("eruda").then((lib) => lib.default.init());
+    void (debug && import("eruda").then((lib) => lib.default.init()));
   }, [debug]);
 
   return (
