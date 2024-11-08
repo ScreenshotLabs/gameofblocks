@@ -23,6 +23,7 @@ interface Config {
     connectionString: string;
     tableName: string;
     // invalidate: Array<{ column: string; value: string }>;
+    noTls?: boolean;
   };
 }
 
@@ -75,7 +76,8 @@ function removeLeadingZeros(paddedHex: string): string {
 }
 
 // Event keys
-const BOSS_CREATED = "0x029c36ed7d680ffd775bc156098edb6eb95d743a3811c99cb217286e14e5098a";
+const BOSS_CREATED =
+  "0x029c36ed7d680ffd775bc156098edb6eb95d743a3811c99cb217286e14e5098a";
 // Filter configuration
 const filter = {
   header: {
@@ -102,6 +104,7 @@ export const config: Config = {
   sinkOptions: {
     connectionString: DATABASE_URL,
     tableName: "bosses",
+    noTls: true,
   },
 };
 
@@ -117,8 +120,8 @@ export default function transform({
   return events.flatMap(({ event }) => {
     const eventKey = event.keys[0];
     const BossId = event.keys[1];
-    logger.debug('Processing data:', {
-      eventKey
+    logger.debug("Processing data:", {
+      eventKey,
     });
     try {
       if (eventKey === BOSS_CREATED) {
@@ -127,14 +130,13 @@ export default function transform({
           is_active: true,
           base_health: parseInt(event.data[0]),
           last_updated: timestamp,
-        }
-      }
-      else {
+        };
+      } else {
         logger.error(`Unknown event type: ${eventKey}`);
         return [];
       }
     } catch (error) {
-      logger.error('Transform error:', error);
+      logger.error("Transform error:", error);
       throw error;
     }
   });

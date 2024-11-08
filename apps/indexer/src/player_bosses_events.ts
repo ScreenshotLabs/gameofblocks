@@ -24,6 +24,7 @@ interface Config {
     entityMode: boolean;
     connectionString: string;
     tableName: string;
+    noTls?: boolean;
   };
 }
 
@@ -49,9 +50,9 @@ interface Event {
 }
 
 const UPDATE_TYPE: { [key: number]: string } = {
-  1: 'ATTACK',
-  2: 'ENERGY',
-  3: 'RECOVERY'
+  1: "ATTACK",
+  2: "ENERGY",
+  3: "RECOVERY",
 } as const;
 
 interface TransformResult {
@@ -102,8 +103,10 @@ if (!DATABASE_URL || !CONTRACT_ADDRESS) {
 }
 
 // Event keys
-const BOSS_ATTACKED = "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
-const BOSS_DEFEATED = "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
+const BOSS_ATTACKED =
+  "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
+const BOSS_DEFEATED =
+  "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
 // Filter configuration
 const filter = {
   header: {
@@ -136,6 +139,7 @@ export const config: Config = {
     entityMode: true,
     connectionString: DATABASE_URL,
     tableName: "player_bosses",
+    noTls: true,
   },
 };
 
@@ -152,8 +156,8 @@ export default function transform({
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
     const contract_address = event.keys[1];
-    logger.debug('Processing data:', {
-      eventKey
+    logger.debug("Processing data:", {
+      eventKey,
     });
     try {
       // Handle Player Created Event
@@ -166,30 +170,27 @@ export default function transform({
             current_health: event.data[2],
             is_defeated: false,
             last_updated: timestamp,
-          }
+          },
         };
       }
       // Handle Player Updated Event
       else if (eventKey === BOSS_DEFEATED) {
         return {
           entity: {
-            contract_address
+            contract_address,
           },
           update: {
             contract_address,
             id: transactionHash,
             last_updated: timestamp,
-          }
+          },
         };
-      }
-
-      else {
+      } else {
         logger.error(`Unknown event type: ${eventKey}`);
         return [];
       }
-
     } catch (error) {
-      logger.error('Transform error:', error);
+      logger.error("Transform error:", error);
       throw error;
     }
   });

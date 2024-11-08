@@ -24,6 +24,7 @@ interface Config {
     entityMode: boolean;
     connectionString: string;
     tableName: string;
+    noTls?: boolean;
   };
 }
 
@@ -49,9 +50,9 @@ interface Event {
 }
 
 const UPDATE_TYPE: { [key: number]: string } = {
-  1: 'ATTACK',
-  2: 'ENERGY',
-  3: 'RECOVERY'
+  1: "ATTACK",
+  2: "ENERGY",
+  3: "RECOVERY",
 } as const;
 
 interface TransformResult {
@@ -102,9 +103,12 @@ if (!DATABASE_URL || !CONTRACT_ADDRESS) {
 }
 
 // Event keys
-const PLAYER_CREATED_EVENT = "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
-const PLAYER_UPDATED_EVENT = "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
-const PLAYER_EARNED_GOLD_EVENT = "0x00300845cd477625325aa95c11d42391d6a9396236bf5034797d00f718ff8f99";
+const PLAYER_CREATED_EVENT =
+  "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
+const PLAYER_UPDATED_EVENT =
+  "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
+const PLAYER_EARNED_GOLD_EVENT =
+  "0x00300845cd477625325aa95c11d42391d6a9396236bf5034797d00f718ff8f99";
 // Filter configuration
 const filter = {
   header: {
@@ -142,10 +146,14 @@ export const config: Config = {
     entityMode: true,
     connectionString: DATABASE_URL,
     tableName: "players",
+    noTls: true,
   },
 };
 
-function parsePlayerData(data: string[], eventKey: string): Partial<TransformResult> {
+function parsePlayerData(
+  data: string[],
+  eventKey: string
+): Partial<TransformResult> {
   try {
     // Determine the offset based on event type
     const offset = eventKey === PLAYER_UPDATED_EVENT ? 1 : 0;
@@ -167,16 +175,19 @@ function parsePlayerData(data: string[], eventKey: string): Partial<TransformRes
       current_boss_id: parseInt(data[6 + offset], 16),
       // Handle gold differently based on event type
       gold_earned: 0,
-      total_gold: eventKey === PLAYER_CREATED_EVENT ?
-        0 :
-        Number(BigInt(data[7 + offset])),
-      gold_spent: eventKey === PLAYER_CREATED_EVENT ?
-      0 : Number(BigInt(data[8 + offset]))
+      total_gold:
+        eventKey === PLAYER_CREATED_EVENT
+          ? 0
+          : Number(BigInt(data[7 + offset])),
+      gold_spent:
+        eventKey === PLAYER_CREATED_EVENT
+          ? 0
+          : Number(BigInt(data[8 + offset])),
     });
 
     return result;
   } catch (error) {
-    logger.error('Error parsing player data:', error);
+    logger.error("Error parsing player data:", error);
     throw new Error(`Failed to parse player data: ${error}`);
   }
 }
@@ -194,15 +205,15 @@ export default function transform({
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
     const contract_address = event.keys[1];
-    logger.debug('Processing data:', {
-      eventKey
+    logger.debug("Processing data:", {
+      eventKey,
     });
     try {
       if (eventKey === PLAYER_EARNED_GOLD_EVENT) {
-        console.log('PLAYER_EARNED_GOLD_EVENT');
+        console.log("PLAYER_EARNED_GOLD_EVENT");
         return {
           entity: {
-            contract_address
+            contract_address,
           },
           update: {
             gold_earned: parseInt(event.data[0], 16),
@@ -210,10 +221,10 @@ export default function transform({
             contract_address,
             id: transactionHash,
             last_updated: timestamp,
-            action_type: 'PLAYER_ATTACK',
+            action_type: "PLAYER_ATTACK",
             gold_spent: 0,
-            upgrade_type: null
-          }
+            upgrade_type: null,
+          },
         };
       }
       // Handle Player Created Event
@@ -225,9 +236,9 @@ export default function transform({
           block_timestamp: timestamp,
           transaction_hash: transactionHash,
           ...playerData,
-          action_type: 'PLAYER_CREATED'
+          action_type: "PLAYER_CREATED",
         };
-        logger.debug('Processing data PLAYER_UPDATED_EVENT:', baseData);
+        logger.debug("Processing data PLAYER_UPDATED_EVENT:", baseData);
 
         return {
           insert: {
@@ -235,7 +246,7 @@ export default function transform({
             contract_address,
             id: transactionHash,
             last_updated: timestamp,
-          }
+          },
         };
       }
       // Handle Player Updated Event
@@ -247,29 +258,26 @@ export default function transform({
           block_timestamp: timestamp,
           transaction_hash: transactionHash,
           ...playerData,
-          action_type: 'PLAYER_UPDATED'
+          action_type: "PLAYER_UPDATED",
         };
-        logger.debug('Processing data PLAYER_UPDATED_EVENT:', baseData);
+        logger.debug("Processing data PLAYER_UPDATED_EVENT:", baseData);
         return {
           entity: {
-            contract_address
+            contract_address,
           },
           update: {
             ...baseData,
             contract_address,
             id: transactionHash,
             last_updated: timestamp,
-          }
+          },
         };
-      }
-
-      else {
+      } else {
         logger.error(`Unknown event type: ${eventKey}`);
         return [];
       }
-
     } catch (error) {
-      logger.error('Transform error:', error);
+      logger.error("Transform error:", error);
       throw error;
     }
   });
