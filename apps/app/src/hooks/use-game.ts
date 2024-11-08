@@ -126,14 +126,14 @@ export default function useGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const bossName = data ? BOSSES[data.boss.id]?.name || "" : "";
+  const bossName = data && data.boss ? BOSSES[data.boss.id]?.name || "" : "";
 
   return {
     gameState,
     isServiceWorking,
     handleAttack,
     player: {
-      damage: data?.player.attack ?? 100,
+      damage: data?.player?.attack ?? 100,
     },
     boss: {
       name: bossName,
