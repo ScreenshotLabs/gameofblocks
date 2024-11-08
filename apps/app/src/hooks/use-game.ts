@@ -74,7 +74,12 @@ export default function useGame() {
       try {
         await spawnPlayer();
         console.log("Player initialization successful.");
-        // setGameState(GameState.INITIALIZED);
+
+        // TODO: maybe replace it by an api-call
+        setBaseHealth(5000);
+        setCurrentHealth(5000);
+
+        setGameState(GameState.INITIALIZED);
       } catch (error) {
         console.error("Error during player initialization:", error);
         setGameState(GameState.ERROR);
