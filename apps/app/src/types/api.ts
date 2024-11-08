@@ -8,7 +8,7 @@ export interface LeaderboardResult {
 export interface GameDataResult {
   isInitializationRequired: boolean;
   boss: {
-    id: string;
+    id: number;
     currentHealth: string;
     isDefeated: boolean;
     baseHealth: string;
