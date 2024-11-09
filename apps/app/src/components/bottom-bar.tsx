@@ -9,7 +9,7 @@ import TopIcon from "./top-icon";
 
 export default function BottomBar() {
   return (
-    <div className="absolute bottom-0 left-0 w-full">
+    <div className="absolute bottom-0 left-0 z-50 w-full">
       <GameFooterBorderless className="relative" />
       <div className="flex h-[90px] items-center justify-between bg-[#0B1938] px-6">
         {/* shop */}
