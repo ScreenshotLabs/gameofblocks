@@ -156,7 +156,7 @@ export default function transform({
             id: transactionHash,
             player_id: event.keys[1],
             boss_id: parseInt(event.data[1]),
-            current_health: event.data[2],
+            current_health: parseInt(event.data[2]),
             is_defeated: false,
             last_updated: new Date().toISOString(),
           },
