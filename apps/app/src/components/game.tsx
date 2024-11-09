@@ -6,7 +6,6 @@ import { GameState } from "@/types/game";
 
 import BossImage from "./boss-animation";
 import GameFooter from "./game-footer";
-import GameHeader from "./game-header";
 import InteractiveZone from "./interactive-zone";
 import Lifebar from "./lifebar";
 import Loader from "./loader";
@@ -32,6 +31,10 @@ export default function Game(): JSX.Element {
     return Promise.resolve();
   };
 
+  if (!boss || !player) {
+    return null;
+  }
+
   if (!isServiceWorking) {
     return (
       <div className="text-status-error">Service is currently unavailable</div>
@@ -43,9 +46,8 @@ export default function Game(): JSX.Element {
   }
 
   return (
-    <div className="bg-game-background h-full">
+    <>
       <TopBar />
-      <GameHeader />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">
         <div className="text-game-text-bright mb-2 text-center font-bold">
           {boss.name}
@@ -70,6 +72,6 @@ export default function Game(): JSX.Element {
         </InteractiveZone>
         <GameFooter />
       </div>
-    </div>
+    </>
   );
 }

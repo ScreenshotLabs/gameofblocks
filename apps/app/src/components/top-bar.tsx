@@ -1,15 +1,33 @@
-import Link from "next/link";
+import GameHeader from "./game-header";
+import GoldIcon from "./gold-icon";
+import LevelIcon from "./level-icon";
+
+function Level({ level }: { level: number }) {
+  return (
+    <div className="relative flex h-[26px] w-[62px] items-center justify-center rounded-lg bg-[#0A132A] font-bold text-[#FFBA08]">
+      <LevelIcon className="absolute left-0 top-0 -ml-[28px] -mt-[4px]" />
+      <div className="leading-none">LVL{level}</div>
+    </div>
+  );
+}
+
+function Gold({ gold }: { gold: number }) {
+  return (
+    <div className="relative flex h-[26px] w-[130px] items-center justify-center rounded-full border border-[#1D3261] bg-[#29437C] font-bold text-[#FFBA08]">
+      <GoldIcon className="absolute left-0 top-0 -ml-[22px] -mt-[16px]" />
+      <div className="leading-none">{gold}</div>
+    </div>
+  );
+}
 
 export default function TopBar() {
   return (
-    <div className="relative z-10 flex h-[51px] items-center gap-4 bg-[#0B1938] px-4">
-      <div className="rounded-lg bg-[#0A132A] px-4 font-bold text-[#DAE6FF]">
-        <Link href="/leaderboard">Leaderboard</Link>
+    <div className="absolute left-0 top-0 w-full">
+      <div className="flex justify-between bg-[#0B1938] p-6">
+        <Gold gold={1268053} />
+        <Level level={1} />
       </div>
-      <div className="rounded-lg bg-[#0A132A] px-4 font-bold text-[#FFBA08]">
-        LVL 1
-      </div>
-      <Link href="/debug">Debug</Link>
+      <GameHeader className="relative" />
     </div>
   );
 }
