@@ -1,5 +1,5 @@
 {
-  "id": "057473e6-0155-4614-8a99-0380e894a9c3",
+  "id": "9f70e0fc-5d4a-4fe1-9e2b-60546e0cf48e",
   "prevId": "77728b14-9015-45b4-9837-1f428115ee95",
   "version": "7",
   "dialect": "postgresql",
@@ -57,23 +57,46 @@
           "name": "id",
           "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "payments_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
-        "player_id": {
-          "name": "player_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "invoice_id": {
-          "name": "invoice_id",
+        "telegram_user_id": {
+          "name": "telegram_user_id",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "amount": {
           "name": "amount",
-          "type": "bigint",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telegram_payment_charge_id": {
+          "name": "telegram_payment_charge_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_payment_charge_id": {
+          "name": "provider_payment_charge_id",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -86,31 +109,9 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "payments_player_id_players_id_fk": {
-          "name": "payments_player_id_players_id_fk",
-          "tableFrom": "payments",
-          "tableTo": "players",
-          "columnsFrom": [
-            "player_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "payments_invoice_id_unique": {
-          "name": "payments_invoice_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "invoice_id"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -269,12 +270,6 @@
         "action_type": {
           "name": "action_type",
           "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isPremium": {
-          "name": "isPremium",
-          "type": "boolean",
           "primaryKey": false,
           "notNull": false
         }

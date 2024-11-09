@@ -41,7 +41,6 @@ export const players = pgTable("players", {
   recoveryLevel: integer("recovery_level").notNull(),
   upgrade_type: varchar("upgrade_type"),
   action_type: varchar("action_type"),
-  isPremium: boolean("isPremium"),
 });
 
 export const playerBosses = pgTable("player_bosses", {

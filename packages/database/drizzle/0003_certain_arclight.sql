@@ -1,1 +1,0 @@
-ALTER TABLE "payments" ALTER COLUMN "currency" SET DATA TYPE varchar;
