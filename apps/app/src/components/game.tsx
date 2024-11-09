@@ -52,10 +52,11 @@ export default function Game(): JSX.Element {
   }
 
   if (
-    isLoading || 
-    !boss || 
-    !player || 
-    gameState !== GameState.INITIALIZED
+    isLoading ||
+    gameState !== GameState.INITIALIZED ||
+    !boss ||
+    !player ||
+    gameState === GameState.INITIALIZING
   ) {
     return <Loader message={loadingMessages[initializationStep]} />;
   }
