@@ -22,17 +22,12 @@ interface BossData {
 }
 
 export function normalizeAddress(address: string): string {
-  const cleanAddress = address.toLowerCase().replace('0x', '');
+  const cleanAddress = address.toLowerCase().replace("0x", "");
   if (!/^[0-9a-f]+$/.test(cleanAddress)) {
-    throw new Error('Address contains invalid characters');
+    throw new Error("Address contains invalid characters");
   }
-  if (cleanAddress.length !== 63 && cleanAddress.length !== 64) {
-    throw new Error('Invalid address length');
-  }
-  const paddedAddress = cleanAddress.length === 63
-    ? '0' + cleanAddress
-    : cleanAddress;
-  return `0x${paddedAddress}`;
+
+  return `0x${cleanAddress.padStart(64, "0")}`;
 }
 
 async function getLatestPlayerBoss(playerId: string, bossId: string): Promise<PlayerBossData | null> {
@@ -93,8 +88,10 @@ export async function GET(req: NextRequest) {
 
     if (!playerData.length) {
       return NextResponse.json(
-        { error: "Player not found" },
-        { status: 404 }
+        {
+          isInitializationRequired: true,
+        },
+        { status: 200 },
       );
     }
 

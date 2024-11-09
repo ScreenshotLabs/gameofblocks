@@ -7,11 +7,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useGaslessService } from "./use-gasless-service";
 import useAccount from "./useAccount";
 
-// Define the API response type
 interface ApiResponse {
   status: 'success';
   data: GameDataResult;
 }
+
+export type InitializationStep = 
+  | "LOADING_INITIAL_DATA"
+  | "SPAWNING_PLAYER"
+  | "LOADING_PLAYER_DATA"
+  | "READY";
 
 export default function useGame() {
   const { account, privateKey, publicKey } = useAccount();
@@ -25,8 +30,10 @@ export default function useGame() {
   const [baseBossHealth, setBaseBossHealth] = useState<number | undefined>();
   const [playerGold, setPlayerGold] = useState<number | undefined>();
   const [currentBossHealth, setCurrentBossHealth] = useState<number | undefined>();
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [initStep, setInitStep] = useState<InitializationStep>("LOADING_INITIAL_DATA");
 
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["game-data", account?.address],
     queryFn: async () => {
       if (!account?.address) throw new Error("No account address");
@@ -45,6 +52,7 @@ export default function useGame() {
       const result = await response.json() as ApiResponse;
       return result.data;
     },
+    refetchInterval: isInitializing ? 100 : undefined,
     enabled: !!account
   });
 
@@ -62,74 +70,47 @@ export default function useGame() {
     }
   };
 
+  const initializePlayerData = () => {
+    if (!data) return;
+
+    setCurrentBossHealth(Number(data.boss?.currentHealth ?? 5000));
+    setBaseBossHealth(Number(data.boss?.baseHealth ?? 5000));
+    setPlayerGold(Number(data.player?.gold ?? 0));
+    setGameState(GameState.INITIALIZED);
+    setIsInitializing(false);
+    setInitStep("READY");
+  };
+
   useEffect(() => {
-    if (!data) {
-      console.log("No data available for initialization.");
-      return;
-    }
+    const handleInitialization = async () => {
+      console.log(data, error, isLoading);
+      console.log("Handling initialization data...");
+      console.log(data);
+      if (!data) return;
 
-    const initPlayer = async () => {
-      setGameState(GameState.INITIALIZING);
-      console.log("Attempting to initialize player...");
-      try {
-        await spawnPlayer();
-        console.log("Player initialization successful.");
-
-        // TODO: maybe replace it by an api-call
-        setBaseBossHealth(5000);
-        setCurrentBossHealth(5000);
-
-        setGameState(GameState.INITIALIZED);
-      } catch (error) {
-        console.error("Error during player initialization:", error);
-        setGameState(GameState.ERROR);
+      if (data.isInitializationRequired && !isInitializing) {
+        setGameState(GameState.INITIALIZING);
+        setIsInitializing(true);
+        setInitStep("SPAWNING_PLAYER");
+        
+        try {
+          await spawnPlayer();
+          setInitStep("LOADING_PLAYER_DATA");
+          await refetch();
+        } catch (error) {
+          console.error("Error during player initialization:", error);
+          setGameState(GameState.ERROR);
+          setIsInitializing(false);
+        }
+      } else if (!data.isInitializationRequired) {
+        initializePlayerData();
       }
     };
 
-    switch (gameState) {
-      case GameState.INITIALIZED:
-      case GameState.ERROR:
-        console.log(
-          `Game state is already ${GameState[gameState]}, skipping initialization.`,
-        );
-        return;
-
-      case GameState.INITIALIZING:
-        console.log(
-          "Current game state is INITIALIZING, processing data:",
-          data,
-        );
-        if (!data.isInitializationRequired) {
-          console.log("Initialization not required, setting health and state.");
-          setCurrentBossHealth(Number(data.boss?.currentHealth ?? 10000));
-          setBaseBossHealth(Number(data.boss?.baseHealth ?? 10000));
-          setGameState(GameState.INITIALIZED);
-          setPlayerGold(Number(data.player?.gold ?? 0));
-        }
-
-        break;
-
-      case GameState.LAUNCHED:
-        console.log(
-          "Current game state is LAUNCHED, checking initialization requirement.",
-        );
-        if (data.isInitializationRequired) {
-          console.log(
-            "Initialization required, starting initialization process.",
-          );
-          void initPlayer();
-        } else {
-          console.log(
-            "Initialization not required, setting health and state directly.",
-          );
-          setCurrentBossHealth(Number(data.boss?.currentHealth ?? 10000));
-          setBaseBossHealth(Number(data.boss?.baseHealth ?? 10000));
-          setGameState(GameState.INITIALIZED);
-        }
-        break;
+    if (gameState === GameState.LAUNCHED || isInitializing) {
+      void handleInitialization();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, gameState, isInitializing, spawnPlayer, refetch]);
 
   return {
     gameState,
@@ -137,6 +118,7 @@ export default function useGame() {
     error,
     isServiceWorking,
     handleAttack,
+    initializationStep: initStep,
     player: data?.player && {
       damage: data.player.attack,
       energyCap: Number(data.player.energyCap),
