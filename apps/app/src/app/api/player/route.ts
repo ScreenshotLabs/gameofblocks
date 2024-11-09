@@ -22,7 +22,7 @@ interface BossData {
   isActive: boolean;
 }
 
-export function normalizeAddress(address: string): string {
+function normalizeAddress(address: string): string {
   const cleanAddress = address.toLowerCase().replace("0x", "");
   if (!/^[0-9a-f]+$/.test(cleanAddress)) {
     throw new Error("Address contains invalid characters");
