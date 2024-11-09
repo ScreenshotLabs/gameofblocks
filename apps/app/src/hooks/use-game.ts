@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { BOSSES } from "@/core/constants";
 import { GameState } from "@/types/game";
 import { useQuery } from "@tanstack/react-query";
+import { useLaunchParams } from "@telegram-apps/sdk-react";
 
 import { useGaslessService } from "./use-gasless-service";
 import useAccount from "./useAccount";
@@ -19,6 +20,7 @@ export type InitializationStep =
   | "READY";
 
 export default function useGame() {
+  const { initData } = useLaunchParams();
   const { account, privateKey, publicKey } = useAccount();
   const { isServiceWorking, spawnPlayer, playerAttack } = useGaslessService({
     address: account?.address,
@@ -44,7 +46,7 @@ export default function useGame() {
       if (!account?.address) throw new Error("No account address");
 
       const response = await fetch(
-        `/api/player?contractAddress=${account.address}`,
+        `/api/player?contractAddress=${account.address}&telegramId=${initData?.user?.id}`,
         {
           method: "GET",
         },
@@ -69,7 +71,8 @@ export default function useGame() {
       (prevValue) => (prevValue ?? 0) - (data?.player.attack ?? 1),
     );
     setPlayerGold(
-      (prevValue) => (prevValue ?? 0) + (data?.player.attack ? data.player.attack * 2 : 1),
+      (prevValue) =>
+        (prevValue ?? 0) + (data?.player.attack ? data.player.attack * 2 : 1),
     );
   };
 
