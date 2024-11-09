@@ -1,5 +1,4 @@
 import AirdropButtons from "@/components/airdrop/airdrop-buttons";
-import AirdropImage from "@/components/airdrop/airdrop-image";
 import GameFooter from "@/components/game-footer";
 import GameHeader from "@/components/game-header";
 import { Page } from "@/components/page";
@@ -15,7 +14,6 @@ export default function AirdropPage() {
         <br />
         to claim your airdrop!
       </div>
-      <AirdropImage />
       <div className="flex flex-col items-center">
         <AirdropButtons />
       </div>
