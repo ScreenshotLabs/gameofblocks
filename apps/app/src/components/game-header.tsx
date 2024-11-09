@@ -1,6 +1,8 @@
-export default function GameHeader() {
+import { cn } from "@/lib/utils";
+
+export default function GameHeader({ className }: { className?: string }) {
   return (
-    <div className="absolute left-0 top-0 w-full">
+    <div className={cn("absolute left-0 top-0 w-full", className)}>
       <svg
         width="100%"
         viewBox="0 0 393 86"

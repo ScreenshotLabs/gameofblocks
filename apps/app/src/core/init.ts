@@ -4,6 +4,7 @@ import {
   initData,
   init as initSDK,
   miniApp,
+  swipeBehavior,
   themeParams,
   viewport,
 } from "@telegram-apps/sdk-react";
@@ -20,10 +21,16 @@ export function init(debug: boolean): void {
   initSDK();
 
   // Mount all components used in the project.
-  backButton.isSupported() && backButton.mount();
+  if (backButton.isSupported()) {
+    backButton.mount();
+  }
+
   miniApp.mount();
   themeParams.mount();
   initData.restore();
+  swipeBehavior.mount();
+  swipeBehavior.disableVertical();
+
   void viewport.mount().catch((e) => {
     console.error("Something went wrong mounting the viewport", e);
   });
