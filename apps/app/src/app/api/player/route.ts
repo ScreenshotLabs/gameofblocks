@@ -3,8 +3,9 @@
 
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { desc, eq, and } from "drizzle-orm";
-import { db, players, playerBosses, bosses } from "@gameofblocks/database";
+import { and, desc, eq } from "drizzle-orm";
+
+import { bosses, db, playerBosses, players } from "@gameofblocks/database";
 
 export const dynamic = "force-dynamic";
 
@@ -21,21 +22,19 @@ interface BossData {
   isActive: boolean;
 }
 
-export function normalizeAddress(address: string): string {
-  const cleanAddress = address.toLowerCase().replace('0x', '');
+function normalizeAddress(address: string): string {
+  const cleanAddress = address.toLowerCase().replace("0x", "");
   if (!/^[0-9a-f]+$/.test(cleanAddress)) {
-    throw new Error('Address contains invalid characters');
+    throw new Error("Address contains invalid characters");
   }
-  if (cleanAddress.length !== 63 && cleanAddress.length !== 64) {
-    throw new Error('Invalid address length');
-  }
-  const paddedAddress = cleanAddress.length === 63
-    ? '0' + cleanAddress
-    : cleanAddress;
-  return `0x${paddedAddress}`;
+
+  return `0x${cleanAddress.padStart(64, "0")}`;
 }
 
-async function getLatestPlayerBoss(playerId: string, bossId: string): Promise<PlayerBossData | null> {
+async function getLatestPlayerBoss(
+  playerId: string,
+  bossId: string,
+): Promise<PlayerBossData | null> {
   const playerBossData = await db
     .select({
       currentHealth: playerBosses.currentHealth,
@@ -44,10 +43,7 @@ async function getLatestPlayerBoss(playerId: string, bossId: string): Promise<Pl
     })
     .from(playerBosses)
     .where(
-      and(
-        eq(playerBosses.playerId, playerId),
-        eq(playerBosses.bossId, bossId)
-      )
+      and(eq(playerBosses.playerId, playerId), eq(playerBosses.bossId, bossId)),
     )
     .orderBy(desc(playerBosses.lastUpdated))
     .limit(1);
@@ -77,7 +73,7 @@ export async function GET(req: NextRequest) {
     if (!contractAddress) {
       return NextResponse.json(
         { error: "Contract address is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,8 +89,12 @@ export async function GET(req: NextRequest) {
 
     if (!playerData.length) {
       return NextResponse.json(
-        { error: "Player not found" },
-        { status: 404 }
+        {
+          data: {
+            isInitializationRequired: true,
+          },
+        },
+        { status: 200 },
       );
     }
 
@@ -103,10 +103,16 @@ export async function GET(req: NextRequest) {
     // Get current boss data
     const bossId = player.currentBossId.toString();
     const currentBoss = await getCurrentBoss(bossId);
-    const playerBossState = await getLatestPlayerBoss(normalizeAddress(contractAddress), bossId);
+    const playerBossState = await getLatestPlayerBoss(
+      normalizeAddress(contractAddress),
+      bossId,
+    );
 
     // Determine if player is initialized
-    const isInitialized = player.attackPower > 0 && player.energyCap > 0 && player.energyRecovery > 0;
+    const isInitialized =
+      player.attackPower > 0 &&
+      player.energyCap > 0 &&
+      player.energyRecovery > 0;
 
     const response = {
       status: "success",
@@ -131,33 +137,35 @@ export async function GET(req: NextRequest) {
               attack: player.attackLevel,
               energy: player.energyLevel,
               recovery: player.recoveryLevel,
-            }
+            },
           },
           lastActions: {
             upgradeType: player.upgrade_type,
             actionType: player.action_type,
-          }
+          },
         },
-        boss: currentBoss ? {
-          id: currentBoss.id,
-          currentHealth: playerBossState?.currentHealth ?? currentBoss.baseHealth,
-          baseHealth: currentBoss.baseHealth,
-          isDefeated: playerBossState?.isDefeated ?? false,
-          isActive: currentBoss.isActive,
-          level: currentBoss.id,
-        } : null,
+        boss: currentBoss
+          ? {
+              id: currentBoss.id,
+              currentHealth:
+                playerBossState?.currentHealth ?? currentBoss.baseHealth,
+              baseHealth: currentBoss.baseHealth,
+              isDefeated: playerBossState?.isDefeated ?? false,
+              isActive: currentBoss.isActive,
+              level: currentBoss.id,
+            }
+          : null,
         isInitializationRequired: !isInitialized,
         lastUpdated: player.lastUpdated,
-      }
+      },
     };
 
     return NextResponse.json(response);
-
   } catch (error) {
     console.error("Error fetching player:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

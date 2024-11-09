@@ -11,16 +11,28 @@ import Lifebar from "./lifebar";
 import Loader from "./loader";
 import TopBar from "./top-bar";
 
+const loadingMessages = {
+  LOADING_INITIAL_DATA: "Loading game data...",
+  SPAWNING_PLAYER: "Creating your character...",
+  LOADING_PLAYER_DATA: "Loading player data...",
+  READY: "Ready!",
+};
+
 export default function Game(): JSX.Element {
-  const { gameState, isServiceWorking, handleAttack, boss, player } = useGame();
-  console.log("boss", boss);
-  console.log("player", player);
+  const {
+    gameState,
+    isLoading,
+    isServiceWorking,
+    handleAttack,
+    boss,
+    player,
+    initializationStep,
+  } = useGame();
+
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
   const handleBossAttack = async (): Promise<void> => {
-    console.log("handleBossAttack");
-    console.log("isAnimating", isAnimating);
     if (!isAnimating) {
       setIsAnimating(true);
       setIsRotating(true);
@@ -33,35 +45,36 @@ export default function Game(): JSX.Element {
     return Promise.resolve();
   };
 
-  if (!boss || !player) {
-    return null;
-  }
-
   if (!isServiceWorking) {
     return (
       <div className="text-status-error">Service is currently unavailable</div>
     );
   }
 
-  if (gameState !== GameState.INITIALIZED) {
-    return <Loader />;
+  if (
+    isLoading || 
+    !boss || 
+    !player || 
+    gameState !== GameState.INITIALIZED
+  ) {
+    return <Loader message={loadingMessages[initializationStep]} />;
   }
 
   return (
     <>
-      <TopBar />
+      <TopBar gold={player.gold ?? 0} level={boss.level} />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">
         <div className="text-game-text-bright mb-2 text-center font-bold">
-          {boss?.name}
+          {boss.name}
         </div>
         <div className="flex justify-center">
           <Lifebar
-            max={boss?.baseHealth ?? 1000}
-            value={boss?.currentHealth ?? 0}
+            max={boss.baseHealth ?? 1000}
+            value={boss.currentHealth ?? 0}
           />
         </div>
         <InteractiveZone
-          playerDamage={player?.damage ?? 1}
+          playerDamage={player.damage}
           className="h-[400px] w-full"
           onInteraction={handleBossAttack}
         >
