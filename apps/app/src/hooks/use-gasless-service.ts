@@ -42,7 +42,7 @@ export const useGaslessService = (params: GaslessServiceParams) => {
         throw new Error("Gasless service is not available");
       }
 
-      console.log(`Player {address} is attacking...`);
+      console.log(`Player ${address} is attacking...`);
 
       if (!address || !privateKey || !publicKey) {
         throw new Error("Missing account information");
