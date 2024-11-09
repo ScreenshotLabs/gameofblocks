@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <Page back={false}>
       <Game />
-      <div className="fixed top-0 h-14 w-full z-[100]">
+      <div className="fixed top-0 h-14 w-full z-[100] opacity-0">
         <ClearStorageButton />
       </div>
     </Page>
