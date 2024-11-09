@@ -1,10 +1,39 @@
 "use client";
 
 import Link from "next/link";
+import { VictorySheet } from "@/components/battle/victory-sheet";
 import ClearStorageButton from "@/components/debug/clear-storage-button";
 import { Page } from "@/components/page";
 import PaymentButton from "@/components/payment-button";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import useAccount from "@/hooks/useAccount";
+
+export function SheetDemo() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline">Open</Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Edit profile</SheetTitle>
+          <SheetDescription>
+            Make changes to your profile here. Click save when you're done.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="grid gap-4 py-4">Sheeit</div>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 export default function DebugPage() {
   const { account, publicKey } = useAccount();
@@ -28,6 +57,8 @@ export default function DebugPage() {
         <Link href="/top">Top</Link>
         <Link href="/airdrop">Airdrop</Link>
         <Link href="/level">Level</Link>
+        <Link href="/test/victory">Victory</Link>
+        <VictorySheet />
       </div>
     </Page>
   );
