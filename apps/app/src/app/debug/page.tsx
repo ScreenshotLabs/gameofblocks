@@ -27,6 +27,7 @@ export default function DebugPage() {
         <Link href="/premium">Premium</Link>
         <Link href="/top">Top</Link>
         <Link href="/airdrop">Airdrop</Link>
+        <Link href="/level">Level</Link>
       </div>
     </Page>
   );

@@ -1,13 +1,18 @@
+import Link from "next/link";
+
 import GameHeader from "./game-header";
 import GoldIcon from "./gold-icon";
 import LevelIcon from "./level-icon";
 
 function Level({ level }: { level: number }) {
   return (
-    <div className="relative flex h-[26px] w-[62px] items-center justify-center rounded-lg bg-[#0A132A] font-bold text-[#FFBA08]">
+    <Link
+      href="/level"
+      className="relative flex h-[26px] w-[62px] items-center justify-center rounded-lg bg-[#0A132A] font-bold text-[#FFBA08]"
+    >
       <LevelIcon className="absolute left-0 top-0 -ml-[28px] -mt-[4px]" />
       <div className="leading-none">LVL{level}</div>
-    </div>
+    </Link>
   );
 }
 
