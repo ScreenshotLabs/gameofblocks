@@ -1,25 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { and, desc, eq } from "drizzle-orm";
 
-import { bosses, db, playerBosses, players } from "@gameofblocks/database";
+import { db, playerBosses, players, bosses } from "@gameofblocks/database";
 
 export const dynamic = "force-dynamic";
 
 // Type Definitions
 interface PlayerBossData {
+  bossId: number;
   currentHealth: number;
   isDefeated: boolean;
   lastUpdated: Date;
-}
-
-interface BossData {
-  id: string;
-  baseHealth: number;
-  isActive: boolean;
+  id: number;
+  baseHealth: number | null;
 }
 
 function normalizeAddress(address: string): string {
@@ -33,36 +27,31 @@ function normalizeAddress(address: string): string {
 
 async function getLatestPlayerBoss(
   playerId: string,
-  bossId: string,
 ): Promise<PlayerBossData | null> {
   const playerBossData = await db
     .select({
+      bossId: playerBosses.bossId,
       currentHealth: playerBosses.currentHealth,
       isDefeated: playerBosses.isDefeated,
       lastUpdated: playerBosses.lastUpdated,
+      id: playerBosses.id,
+      baseHealth: bosses.baseHealth
     })
     .from(playerBosses)
+    .leftJoin(bosses, eq(playerBosses.bossId, bosses.id))
     .where(
-      and(eq(playerBosses.playerId, playerId), eq(playerBosses.bossId, bossId)),
+      and(eq(playerBosses.playerId, playerId)),
     )
     .orderBy(desc(playerBosses.lastUpdated))
     .limit(1);
 
-  return playerBossData.length > 0 ? playerBossData[0] : null;
-}
+  if (playerBossData.length === 0) return null;
 
-async function getCurrentBoss(bossId: string): Promise<BossData | null> {
-  const bossData = await db
-    .select({
-      id: bosses.id,
-      baseHealth: bosses.baseHealth,
-      isActive: bosses.isActive,
-    })
-    .from(bosses)
-    .where(eq(bosses.id, bossId))
-    .limit(1);
-
-  return bossData.length > 0 ? bossData[0] : null;
+  return {
+    ...playerBossData[0],
+    bossId: Number(playerBossData[0].bossId),
+    id: Number(playerBossData[0].id)
+  };
 }
 
 export async function GET(req: NextRequest) {
@@ -99,13 +88,9 @@ export async function GET(req: NextRequest) {
     }
 
     const player = playerData[0];
-
     // Get current boss data
-    const bossId = player.currentBossId.toString();
-    const currentBoss = await getCurrentBoss(bossId);
     const playerBossState = await getLatestPlayerBoss(
-      normalizeAddress(contractAddress),
-      bossId,
+      normalizedAddress
     );
 
     // Determine if player is initialized
@@ -113,7 +98,7 @@ export async function GET(req: NextRequest) {
       player.attackPower > 0 &&
       player.energyCap > 0 &&
       player.energyRecovery > 0;
-
+    console.log(playerBossState);
     const response = {
       status: "success",
       data: {
@@ -144,22 +129,19 @@ export async function GET(req: NextRequest) {
             actionType: player.action_type,
           },
         },
-        boss: currentBoss
-          ? {
-              id: currentBoss.id,
-              currentHealth:
-                playerBossState?.currentHealth ?? currentBoss.baseHealth,
-              baseHealth: currentBoss.baseHealth,
-              isDefeated: playerBossState?.isDefeated ?? false,
-              isActive: currentBoss.isActive,
-              level: currentBoss.id,
-            }
-          : null,
+        boss: {
+          id: playerBossState ? playerBossState.bossId : 1,
+          currentHealth: playerBossState ? playerBossState.currentHealth : 100,
+          baseHealth: playerBossState ? playerBossState.baseHealth : 100,
+          isDefeated: playerBossState ? playerBossState.isDefeated : false,
+          isActive: playerBossState ? !playerBossState.isDefeated : true,
+          level: playerBossState ? playerBossState.id : 1,
+        },
         isInitializationRequired: !isInitialized,
         lastUpdated: player.lastUpdated,
       },
     };
-
+    console.log(response);
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching player:", error);

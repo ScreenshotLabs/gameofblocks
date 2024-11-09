@@ -125,7 +125,7 @@ export const config: Config = {
   startingBlock: 293160,
   network: "starknet",
   authToken: "dna_LLzGr1wBZ0kcnyyRutt5",
-  finality: "DATA_STATUS_ACCEPTED",
+  finality: "DATA_STATUS_PENDING",
   filter,
   sinkType: "postgres",
   sinkOptions: {
@@ -155,7 +155,7 @@ export default function transform({
           insert: {
             id: `${transactionHash}_${index}`,
             player_id: event.keys[1],
-            boss_id: parseInt(event.data[1]),
+            boss_id: parseInt(event.data[0]),
             current_health: parseInt(event.data[2]),
             is_defeated: false,
             last_updated: new Date().toISOString(),

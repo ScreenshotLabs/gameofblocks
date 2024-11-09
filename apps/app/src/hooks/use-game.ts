@@ -66,10 +66,10 @@ export default function useGame() {
   const handleAttack = () => {
     attacksRef.current += 1;
     setCurrentBossHealth(
-      (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
+      (prevValue) => (prevValue ?? 0) - (data?.player.attack ?? 1),
     );
     setPlayerGold(
-      (prevValue) => (prevValue ?? 0) + (data?.player?.attack ?? 1),
+      (prevValue) => (prevValue ?? 0) + (data?.player.attack ? data.player.attack * 2 : 1),
     );
   };
 
@@ -78,11 +78,12 @@ export default function useGame() {
 
     setCurrentBossHealth(Number(data.boss?.currentHealth ?? 5000));
     setBaseBossHealth(Number(data.boss?.baseHealth ?? 5000));
-    setPlayerGold(Number(data.player?.gold ?? 0));
+    setPlayerGold(Number(data.player.gold));
     setGameState(GameState.INITIALIZED);
     setIsInitializing(false);
     setInitStep("READY");
   };
+
   useEffect(() => {
     if (gameState !== GameState.INITIALIZED) return;
 

@@ -138,7 +138,7 @@ export const config: Config = {
   startingBlock: 293160,
   network: "starknet",
   authToken: "dna_szdjATEagn6GhxEyPPeL",
-  finality: "DATA_STATUS_ACCEPTED",
+  finality: "DATA_STATUS_PENDING",
   filter,
   sinkType: "postgres",
   sinkOptions: {
@@ -220,8 +220,9 @@ export default function transform({
           update: {
             gold_earned: parseInt(event.data[0], 16),
             total_gold: parseInt(event.data[1], 16),
+            boss_id: parseInt(event.data[2], 16),
             contract_address,
-            id: `${transactionHash}_${index}`,
+            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000)}`,
             last_updated: formatTimestamp(Date.now()),
             action_type: "PLAYER_ATTACK",
             gold_spent: 0,
@@ -243,7 +244,7 @@ export default function transform({
           insert: {
             ...baseData,
             contract_address,
-            id: `${transactionHash}_${index}`,
+            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000)}`,
             last_updated: formatTimestamp(new Date()),
           },
         };
@@ -265,7 +266,7 @@ export default function transform({
           update: {
             ...baseData,
             contract_address,
-            id: `${transactionHash}_${index}`,
+            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000)}`,
             last_updated: formatTimestamp(new Date()),
           },
         };

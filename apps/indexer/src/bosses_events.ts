@@ -97,7 +97,7 @@ export const config: Config = {
   startingBlock: 296040,
   network: "starknet",
   authToken: "dna_BInUSPnNjV8cuFmE4tPw",
-  finality: "DATA_STATUS_ACCEPTED",
+  finality: "DATA_STATUS_PENDING",
   filter,
   sinkType: "postgres",
   sinkOptions: {

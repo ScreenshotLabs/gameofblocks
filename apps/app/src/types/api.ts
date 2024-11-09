@@ -14,7 +14,7 @@ export interface GameDataResult {
     baseHealth: string;
     level: number;
   };
-  player?: {
+  player: {
     attack: number;
     energyCap: string;
     recovery: string;

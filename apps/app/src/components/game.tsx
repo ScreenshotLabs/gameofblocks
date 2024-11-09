@@ -62,6 +62,13 @@ export default function Game(): JSX.Element {
     return <Loader message={loadingMessages[initializationStep]} />;
   }
 
+  if (boss.currentHealth && boss.currentHealth <= 0) {
+    return (
+      <div className="bg-red-500 absolute z-[100] w-full h-full top-0 left-0">
+        test
+      </div>
+    )
+  }
   return (
     <PageGame>
       <TopBar gold={player.gold ?? 0} level={boss.level} />
@@ -69,7 +76,7 @@ export default function Game(): JSX.Element {
         className="flex min-h-screen flex-col bg-cover bg-center bg-no-repeat pb-[100px] pt-[126px]"
         style={{ backgroundImage: "url('/images/background-scene.jpg')" }}
       >
-        <div className="">
+        <div className="relative">
           <GameBossName name={boss.name} />
           <Lifebar
             max={boss.baseHealth ?? 1000}
