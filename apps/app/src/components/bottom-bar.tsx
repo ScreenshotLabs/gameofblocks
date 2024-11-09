@@ -15,8 +15,8 @@ export default function BottomBar({ isPremium }: { isPremium: boolean }) {
       <div className="flex h-[90px] items-center justify-between gap-2 bg-[#0B1938] px-2">
         {/* shop */}
         <Link
-          href="/shop"
-          className="flex h-[55px] w-[68px] flex-col items-center rounded-[10px] bg-[#0A132A] p-1"
+          href="#"
+          className="flex h-[55px] w-[68px] flex-col items-center rounded-[10px] bg-[#0A132A] p-1 opacity-60"
         >
           <ShopIcon />
           <div className="text-center text-xs font-semibold">Shop</div>
