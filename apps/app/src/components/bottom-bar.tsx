@@ -10,7 +10,7 @@ import UpgradeIcon from "./upgrade-icon";
 
 export default function BottomBar({ isPremium }: { isPremium: boolean }) {
   return (
-    <div className="absolute bottom-0 left-0 z-50 w-full">
+    <div className="text-game-text absolute bottom-0 left-0 z-50 w-full">
       <GameFooterBorderless className="relative" />
       <div className="flex h-[90px] items-center justify-between gap-2 bg-[#0B1938] px-2">
         {/* shop */}
