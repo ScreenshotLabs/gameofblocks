@@ -12,7 +12,7 @@ export default function PremiumPage() {
       <GameHeader />
       <PageTitle>Premium</PageTitle>
 
-      <div className="my-6 text-center leading-5">
+      <div className="my-6 text-center leading-5 text-white">
         Buying a Premium account makes you eligible
         <br />
         for our upcoming{" "}

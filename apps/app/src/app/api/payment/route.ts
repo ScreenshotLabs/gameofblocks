@@ -12,12 +12,13 @@ export async function POST(req: NextRequest, {}) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      title: "Ranked Account",
-      description: "Example Order",
+      title: "Premium Account",
+      description:
+        "Unlock exclusive features and enhance your gameplay experience in the Game of Blocks with a premium account.",
       payload: "payload",
       provider_token: "123",
       currency: "XTR",
-      prices: [{ label: "fufo", amount: 1 }],
+      prices: [{ label: "Game of Blocks Premium Access", amount: 1 }],
     }),
   });
 
@@ -26,6 +27,5 @@ export async function POST(req: NextRequest, {}) {
   const slug = result.split("$")[1];
 
   console.log("=> slug", slug);
-
   return NextResponse.json({ slug });
 }
