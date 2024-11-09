@@ -6,6 +6,7 @@ export interface LeaderboardResult {
 }
 
 export interface GameDataResult {
+  isPremium: boolean;
   isInitializationRequired: boolean;
   boss?: {
     id: number;
