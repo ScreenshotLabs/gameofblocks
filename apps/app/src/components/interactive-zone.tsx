@@ -62,7 +62,7 @@ export default function InteractiveZone({
       >
         {children}
       </div>
-      <div className="absolute bottom-0 left-0 right-0 top-0 z-100">
+      <div className="z-100 text-game-text absolute bottom-0 left-0 right-0 top-0">
         {elements.map((element) => (
           <TouchFeedback
             playerDamage={playerDamage}
