@@ -74,10 +74,6 @@ interface TransformResult {
   gold_spent?: number;
 }
 
-function removeLeadingZeros(paddedHex: string): string {
-  return "0x" + paddedHex.replace("0x", "").replace(/^0+/, "");
-}
-
 // Logger setup
 await setup({
   handlers: {
@@ -205,12 +201,14 @@ export default function transform({
   header: Header;
   events: Event[];
 }) {
+  console.log(events)
   const { blockNumber, blockHash } = header;
 
   return events.flatMap(({ event, transaction }, index) => {
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
     const contract_address = event.keys[1];
+    logger.debug(event);
     try {
       if (eventKey === PLAYER_EARNED_GOLD_EVENT) {
         return {
@@ -222,7 +220,7 @@ export default function transform({
             total_gold: parseInt(event.data[1], 16),
             boss_id: parseInt(event.data[2], 16),
             contract_address,
-            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000)}`,
+            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000000)}`,
             last_updated: formatTimestamp(Date.now()),
             action_type: "PLAYER_ATTACK",
             gold_spent: 0,
@@ -244,7 +242,7 @@ export default function transform({
           insert: {
             ...baseData,
             contract_address,
-            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000)}`,
+            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000000)}`,
             last_updated: formatTimestamp(new Date()),
           },
         };
@@ -266,7 +264,7 @@ export default function transform({
           update: {
             ...baseData,
             contract_address,
-            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000)}`,
+            id: `${transactionHash}_${index}_${Math.floor(Math.random() * 1000000)}`,
             last_updated: formatTimestamp(new Date()),
           },
         };
