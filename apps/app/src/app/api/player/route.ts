@@ -89,7 +89,9 @@ export async function GET(req: NextRequest) {
     if (!playerData.length) {
       return NextResponse.json(
         {
-          isInitializationRequired: true,
+          data: {
+            isInitializationRequired: true,
+          }
         },
         { status: 200 },
       );
