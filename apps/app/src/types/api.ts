@@ -12,14 +12,14 @@ export interface GameDataResult {
     currentHealth: string;
     isDefeated: boolean;
     baseHealth: string;
+    level: number;
   };
   player?: {
     attack: number;
     energyCap: string;
     recovery: string;
+    gold: number;
   };
-  gold: number;
-  level: number;
 }
 
 export interface PaymentResponse {

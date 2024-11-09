@@ -19,14 +19,10 @@ export const players = pgTable("players", {
   contractAddress: varchar("contract_address"),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
   _cursor: int8range("_cursor").notNull(),
-  
-  // Player stats
   attackPower: integer("attack_power").notNull(),
   energyCap: integer("energy_cap").notNull(),
   energyRecovery: integer("energy_recovery").notNull(),
   currentBossId: integer("current_boss_id").notNull(),
-  
-  // Player economy
   goldEarned: bigint("gold_earned", { mode: "number" }),
   goldspent: bigint("gold_spent", { mode: "number" }),
   totalGold: bigint("total_gold", { mode: "number" }).notNull(),
@@ -40,7 +36,7 @@ export const players = pgTable("players", {
 export const playerBosses = pgTable("player_bosses", {
   id: varchar("id").primaryKey(),
   playerId: varchar("player_id").notNull(),
-  bossId: varchar("boss_id").notNull(), // Removed reference to bosses table
+  bossId: varchar("boss_id").notNull(),
   currentHealth: integer("current_health").notNull(),
   isDefeated: boolean("is_defeated").notNull(),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),

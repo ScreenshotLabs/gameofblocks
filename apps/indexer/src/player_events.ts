@@ -31,7 +31,6 @@ interface Config {
 interface Header {
   blockNumber: string;
   blockHash: string;
-  timestamp: string;
 }
 
 interface Event {
@@ -192,6 +191,13 @@ function parsePlayerData(
   }
 }
 
+function formatTimestamp(timestamp: number | string | Date): string {
+  if (timestamp instanceof Date) {
+    return timestamp.toISOString();
+  }
+  return new Date(timestamp).toISOString();
+}
+
 export default function transform({
   header,
   events,
@@ -199,18 +205,14 @@ export default function transform({
   header: Header;
   events: Event[];
 }) {
-  const { blockNumber, blockHash, timestamp } = header;
+  const { blockNumber, blockHash } = header;
 
   return events.flatMap(({ event, transaction }) => {
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
     const contract_address = event.keys[1];
-    logger.debug("Processing data:", {
-      eventKey,
-    });
     try {
       if (eventKey === PLAYER_EARNED_GOLD_EVENT) {
-        console.log("PLAYER_EARNED_GOLD_EVENT");
         return {
           entity: {
             contract_address,
@@ -220,47 +222,42 @@ export default function transform({
             total_gold: parseInt(event.data[1], 16),
             contract_address,
             id: transactionHash,
-            last_updated: timestamp,
+            last_updated: formatTimestamp(Date.now()),
             action_type: "PLAYER_ATTACK",
             gold_spent: 0,
             upgrade_type: null,
           },
         };
       }
-      // Handle Player Created Event
       if (eventKey === PLAYER_CREATED_EVENT) {
         const playerData = parsePlayerData(event.data, eventKey);
         const baseData = {
           block_hash: blockHash,
           block_number: Number(blockNumber),
-          block_timestamp: timestamp,
           transaction_hash: transactionHash,
           ...playerData,
           action_type: "PLAYER_CREATED",
         };
-        logger.debug("Processing data PLAYER_UPDATED_EVENT:", baseData);
 
         return {
           insert: {
             ...baseData,
             contract_address,
             id: transactionHash,
-            last_updated: timestamp,
+            last_updated: formatTimestamp(new Date()),
           },
         };
       }
-      // Handle Player Updated Event
-      else if (eventKey === PLAYER_UPDATED_EVENT) {
+      if (eventKey === PLAYER_UPDATED_EVENT) {
         const playerData = parsePlayerData(event.data, eventKey);
         const baseData = {
           block_hash: blockHash,
           block_number: Number(blockNumber),
-          block_timestamp: timestamp,
           transaction_hash: transactionHash,
           ...playerData,
           action_type: "PLAYER_UPDATED",
         };
-        logger.debug("Processing data PLAYER_UPDATED_EVENT:", baseData);
+        
         return {
           entity: {
             contract_address,
@@ -269,13 +266,11 @@ export default function transform({
             ...baseData,
             contract_address,
             id: transactionHash,
-            last_updated: timestamp,
+            last_updated: formatTimestamp(new Date()),
           },
         };
-      } else {
-        logger.error(`Unknown event type: ${eventKey}`);
-        return [];
       }
+      return [];
     } catch (error) {
       logger.error("Transform error:", error);
       throw error;

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import useGame from "@/hooks/use-game";
 import { GameState } from "@/types/game";
-import { set } from "zod";
 
 import BossImage from "./boss-animation";
 import GameFooter from "./game-footer";
@@ -18,7 +17,7 @@ export default function Game(): JSX.Element {
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
-  const handleBossAttack = (): Promise<void> => {
+  const handleBossAttack = async (): Promise<void> => {
     console.log("handleBossAttack");
     console.log("isAnimating", isAnimating);
     if (!isAnimating) {
@@ -28,7 +27,7 @@ export default function Game(): JSX.Element {
         setIsRotating(false);
         setIsAnimating(false);
       }, 300);
-      handleAttack();
+      await handleAttack();
     }
     return Promise.resolve();
   };

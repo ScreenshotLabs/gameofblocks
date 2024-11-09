@@ -30,7 +30,6 @@ interface Config {
 interface Header {
   blockNumber: string;
   blockHash: string;
-  timestamp: string;
 }
 
 interface Event {
@@ -109,14 +108,11 @@ export const config: Config = {
 };
 
 export default function transform({
-  header,
   events,
 }: {
   header: Header;
   events: Event[];
 }) {
-  const { timestamp } = header;
-
   return events.flatMap(({ event }) => {
     const eventKey = event.keys[0];
     const BossId = event.keys[1];
@@ -129,7 +125,7 @@ export default function transform({
           id: parseInt(BossId),
           is_active: true,
           base_health: parseInt(event.data[0]),
-          last_updated: timestamp,
+          last_updated: new Date().toISOString(),
         };
       } else {
         logger.error(`Unknown event type: ${eventKey}`);

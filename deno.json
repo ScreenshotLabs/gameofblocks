@@ -1,5 +1,6 @@
 {
   "exclude": [
-    "apps/app/**"
+    "apps/app/**",
+    "packages/database/**"
   ]
 }

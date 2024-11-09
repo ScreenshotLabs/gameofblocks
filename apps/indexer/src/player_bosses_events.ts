@@ -31,7 +31,6 @@ interface Config {
 interface Header {
   blockNumber: string;
   blockHash: string;
-  timestamp: string;
 }
 
 interface Event {
@@ -48,12 +47,6 @@ interface Event {
     };
   };
 }
-
-const UPDATE_TYPE: { [key: number]: string } = {
-  1: "ATTACK",
-  2: "ENERGY",
-  3: "RECOVERY",
-} as const;
 
 interface TransformResult {
   block_hash: string;
@@ -104,9 +97,9 @@ if (!DATABASE_URL || !CONTRACT_ADDRESS) {
 
 // Event keys
 const BOSS_ATTACKED =
-  "0x02716372be32fe9a63c2fc129c0616f42197afa389b71f7f51d7e242b16c1b46";
-const BOSS_DEFEATED =
-  "0x031f8c8209f4535baa1913d00bb2a44064c722e037de321dd7e2e029a397ddda";
+  "0x02b61b9b7ef5b3fe9930e4e077f664bc7d041d560e816e57c0bf35b2e07c16c0";
+// const BOSS_DEFEATED =
+//   "x2b61b9b7ef5b3fe9930e4e077f664bc7d041d560e816e57c0bf35b2e07c16c0";
 // Filter configuration
 const filter = {
   header: {
@@ -118,11 +111,11 @@ const filter = {
       keys: [BOSS_ATTACKED],
       includeReceipt: false,
     },
-    {
-      fromAddress: CONTRACT_ADDRESS,
-      keys: [BOSS_DEFEATED],
-      includeReceipt: false,
-    },
+    // {
+    //   fromAddress: CONTRACT_ADDRESS,
+    //   keys: [BOSS_DEFEATED],
+    //   includeReceipt: false,
+    // },
   ],
 };
 
@@ -150,15 +143,11 @@ export default function transform({
   header: Header;
   events: Event[];
 }) {
-  const { blockNumber, blockHash, timestamp } = header;
+  const { blockNumber, blockHash } = header;
 
   return events.flatMap(({ event, transaction }) => {
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
-    const contract_address = event.keys[1];
-    logger.debug("Processing data:", {
-      eventKey,
-    });
     try {
       // Handle Player Created Event
       if (eventKey === BOSS_ATTACKED) {
@@ -166,26 +155,27 @@ export default function transform({
           insert: {
             id: transactionHash,
             player_id: event.keys[1],
-            boss_id: event.data[1],
+            boss_id: parseInt(event.data[1]),
             current_health: event.data[2],
             is_defeated: false,
-            last_updated: timestamp,
+            last_updated: new Date().toISOString(),
           },
         };
       }
       // Handle Player Updated Event
-      else if (eventKey === BOSS_DEFEATED) {
-        return {
-          entity: {
-            contract_address,
-          },
-          update: {
-            contract_address,
-            id: transactionHash,
-            last_updated: timestamp,
-          },
-        };
-      } else {
+      // else if (eventKey === BOSS_DEFEATED) {
+      //   return {
+      //     entity: {
+      //       contract_address,
+      //     },
+      //     update: {
+      //       contract_address,
+      //       id: transactionHash,
+      //       last_updated: timestamp,
+      //     },
+      //   };
+      // }
+      else {
         logger.error(`Unknown event type: ${eventKey}`);
         return [];
       }
