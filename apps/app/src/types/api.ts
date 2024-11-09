@@ -15,6 +15,7 @@ export interface GameDataResult {
     level: number;
   };
   player: {
+    isPremium: boolean;
     attack: number;
     energyCap: string;
     recovery: string;

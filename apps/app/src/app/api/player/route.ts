@@ -2,7 +2,13 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { and, desc, eq } from "drizzle-orm";
 
-import { db, playerBosses, players, bosses } from "@gameofblocks/database";
+import {
+  bosses,
+  db,
+  payments,
+  playerBosses,
+  players,
+} from "@gameofblocks/database";
 
 export const dynamic = "force-dynamic";
 
@@ -35,13 +41,11 @@ async function getLatestPlayerBoss(
       isDefeated: playerBosses.isDefeated,
       lastUpdated: playerBosses.lastUpdated,
       id: playerBosses.id,
-      baseHealth: bosses.baseHealth
+      baseHealth: bosses.baseHealth,
     })
     .from(playerBosses)
     .leftJoin(bosses, eq(playerBosses.bossId, bosses.id))
-    .where(
-      and(eq(playerBosses.playerId, playerId)),
-    )
+    .where(and(eq(playerBosses.playerId, playerId)))
     .orderBy(desc(playerBosses.lastUpdated))
     .limit(1);
 
@@ -50,7 +54,7 @@ async function getLatestPlayerBoss(
   return {
     ...playerBossData[0],
     bossId: Number(playerBossData[0].bossId),
-    id: Number(playerBossData[0].id)
+    id: Number(playerBossData[0].id),
   };
 }
 
@@ -58,6 +62,7 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const contractAddress = searchParams.get("contractAddress");
+    const telegramId = searchParams.get("telegramId");
 
     if (!contractAddress) {
       return NextResponse.json(
@@ -89,9 +94,7 @@ export async function GET(req: NextRequest) {
 
     const player = playerData[0];
     // Get current boss data
-    const playerBossState = await getLatestPlayerBoss(
-      normalizedAddress
-    );
+    const playerBossState = await getLatestPlayerBoss(normalizedAddress);
 
     // Determine if player is initialized
     const isInitialized =
@@ -99,10 +102,23 @@ export async function GET(req: NextRequest) {
       player.energyCap > 0 &&
       player.energyRecovery > 0;
     console.log(playerBossState);
+
+    let isPremium = false;
+    if (telegramId) {
+      const payment = await db
+        .select()
+        .from(payments)
+        .where(eq(payments.telegramUserId, telegramId))
+        .limit(1);
+
+      isPremium = payment.length > 0;
+    }
+
     const response = {
       status: "success",
       data: {
         player: {
+          isPremium,
           attack: player.attackPower,
           energyCap: player.energyCap,
           recovery: player.energyRecovery,
