@@ -207,7 +207,7 @@ export default function transform({
 }) {
   const { blockNumber, blockHash } = header;
 
-  return events.flatMap(({ event, transaction }) => {
+  return events.flatMap(({ event, transaction }, index) => {
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
     const contract_address = event.keys[1];
@@ -221,7 +221,7 @@ export default function transform({
             gold_earned: parseInt(event.data[0], 16),
             total_gold: parseInt(event.data[1], 16),
             contract_address,
-            id: transactionHash,
+            id: `${transactionHash}_${index}`,
             last_updated: formatTimestamp(Date.now()),
             action_type: "PLAYER_ATTACK",
             gold_spent: 0,
@@ -243,7 +243,7 @@ export default function transform({
           insert: {
             ...baseData,
             contract_address,
-            id: transactionHash,
+            id: `${transactionHash}_${index}`,
             last_updated: formatTimestamp(new Date()),
           },
         };
@@ -257,7 +257,7 @@ export default function transform({
           ...playerData,
           action_type: "PLAYER_UPDATED",
         };
-        
+
         return {
           entity: {
             contract_address,
@@ -265,7 +265,7 @@ export default function transform({
           update: {
             ...baseData,
             contract_address,
-            id: transactionHash,
+            id: `${transactionHash}_${index}`,
             last_updated: formatTimestamp(new Date()),
           },
         };

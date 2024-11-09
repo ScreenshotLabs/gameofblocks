@@ -145,7 +145,7 @@ export default function transform({
 }) {
   const { blockNumber, blockHash } = header;
 
-  return events.flatMap(({ event, transaction }) => {
+  return events.flatMap(({ event, transaction }, index) => {
     const eventKey = event.keys[0];
     const transactionHash = transaction.meta.hash;
     try {
@@ -153,7 +153,7 @@ export default function transform({
       if (eventKey === BOSS_ATTACKED) {
         return {
           insert: {
-            id: transactionHash,
+            id: `${transactionHash}_${index}`,
             player_id: event.keys[1],
             boss_id: parseInt(event.data[1]),
             current_health: parseInt(event.data[2]),
