@@ -17,6 +17,12 @@ body {
   cursor: default;
 }
 
+* {
+  user-select: none;
+  -webkit-user-select: none; /* For Safari */
+  -ms-user-select: none;     /* For IE 10+ */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -80,4 +86,12 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.text-stroke {
+  text-shadow:
+    -2px -2px 0 black,
+    2px -2px 0 black,
+    -2px 2px 0 black,
+    2px 2px 0 black;
 }

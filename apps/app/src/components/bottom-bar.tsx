@@ -11,7 +11,7 @@ export default function BottomBar() {
   return (
     <div className="absolute bottom-0 left-0 z-50 w-full">
       <GameFooterBorderless className="relative" />
-      <div className="flex h-[90px] items-center justify-between bg-[#0B1938] px-6">
+      <div className="flex h-[90px] items-center justify-between gap-2 bg-[#0B1938] px-2">
         {/* shop */}
         <Link
           href="/shop"
@@ -29,7 +29,7 @@ export default function BottomBar() {
           <div className="text-center text-xs font-semibold">Invite</div>
         </Link>
         {/* premium */}
-        <Link href="/premium">
+        <Link href="/premium" className="-mt-2">
           <PremiumIcon />
         </Link>
         {/* top */}

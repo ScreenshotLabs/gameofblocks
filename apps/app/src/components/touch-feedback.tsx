@@ -9,13 +9,13 @@ export default function TouchFeedback({
 }) {
   return (
     <div
-      className="animate-rise pointer-events-none absolute z-30 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 font-bold opacity-50"
+      className="animate-rise text-stroke pointer-events-none absolute z-30 flex text-2xl font-black"
       style={{
         left: x - 16,
         top: y - 16,
       }}
     >
-      {`-${playerDamage}`}
+      {playerDamage}
     </div>
   );
 }
