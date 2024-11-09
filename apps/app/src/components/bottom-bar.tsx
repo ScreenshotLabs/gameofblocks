@@ -6,8 +6,9 @@ import InviteIcon from "./invite-icon";
 import PremiumIcon from "./premium-icon";
 import ShopIcon from "./shop-icon";
 import TopIcon from "./top-icon";
+import UpgradeIcon from "./upgrade-icon";
 
-export default function BottomBar() {
+export default function BottomBar({ isPremium }: { isPremium: boolean }) {
   return (
     <div className="absolute bottom-0 left-0 z-50 w-full">
       <GameFooterBorderless className="relative" />
@@ -29,9 +30,15 @@ export default function BottomBar() {
           <div className="text-center text-xs font-semibold">Invite</div>
         </Link>
         {/* premium */}
-        <Link href="/premium" className="-mt-2">
-          <PremiumIcon />
-        </Link>
+        {isPremium ? (
+          <Link href="/upgrade" className="-mt-2">
+            <UpgradeIcon />
+          </Link>
+        ) : (
+          <Link href="/premium" className="-mt-2">
+            <PremiumIcon />
+          </Link>
+        )}
         {/* top */}
         <Link
           href="/top"

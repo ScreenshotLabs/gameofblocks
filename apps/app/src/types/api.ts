@@ -6,7 +6,6 @@ export interface LeaderboardResult {
 }
 
 export interface GameDataResult {
-  isPremium: boolean;
   isInitializationRequired: boolean;
   boss?: {
     id: number;
@@ -16,6 +15,7 @@ export interface GameDataResult {
     level: number;
   };
   player: {
+    isPremium: boolean;
     attack: number;
     energyCap: string;
     recovery: string;

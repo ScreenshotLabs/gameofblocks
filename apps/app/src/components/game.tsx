@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import BattleVictory from "@/components/battle/victory";
 import BottomBar from "@/components/bottom-bar";
 import GameBossName from "@/components/game-boss-name";
@@ -15,6 +15,7 @@ import { GameState } from "@/types/game";
 import { cloudStorage } from "@telegram-apps/sdk-react";
 
 import BossImage from "./boss-animation";
+import Hero0 from "./heroes/hero-0";
 import InteractiveZone from "./interactive-zone";
 import Loader from "./loader";
 
@@ -51,10 +52,10 @@ export default function Game(): JSX.Element {
       try {
         if (boss?.currentHealth && boss.currentHealth <= 0) {
           await cloudStorage.setItem(GAME_END, "1");
-          console.log('Boss defeated! Health dropped to:', boss.currentHealth);
+          console.log("Boss defeated! Health dropped to:", boss.currentHealth);
         }
       } catch (error) {
-        console.error('Failed to save game end state:', error);
+        console.error("Failed to save game end state:", error);
       }
     })();
   }, [boss?.currentHealth]);
@@ -85,8 +86,8 @@ export default function Game(): JSX.Element {
   return (
     <PageGame>
       <TopBar gold={player.gold ?? 0} level={boss.level} />
-      {boss.currentHealth && boss.currentHealth <= 0 || isClosed ? (
-        <div className="bottom-0 absolute w-full z-[100] overflow-hidden rounded">
+      {(boss.currentHealth && boss.currentHealth <= 0) || isClosed ? (
+        <div className="absolute bottom-0 z-[100] w-full overflow-hidden rounded">
           <BattleVictory />
         </div>
       ) : (
@@ -116,13 +117,17 @@ export default function Game(): JSX.Element {
             </InteractiveZone>
           </div>
           <div className="flex h-[100px] w-full items-center gap-2">
-            <Hero1 className="-mt-[50px]" />
+            {player.isPremium ? (
+              <Hero1 className="-mt-[50px]" />
+            ) : (
+              <Hero0 className="-mt-[50px]" />
+            )}
             <Stats />
             <Spell className="-mt-[20px] opacity-30" />
           </div>
         </div>
       )}
-      <BottomBar />
+      <BottomBar isPremium={player.isPremium} />
     </PageGame>
   );
 }

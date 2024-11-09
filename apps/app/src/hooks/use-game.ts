@@ -144,6 +144,7 @@ export default function useGame() {
     handleAttack,
     initializationStep: initStep,
     player: data?.player && {
+      isPremium: data.player.isPremium,
       damage: data.player.attack,
       energyCap: Number(data.player.energyCap),
       recovery: Number(data.player.recovery),
