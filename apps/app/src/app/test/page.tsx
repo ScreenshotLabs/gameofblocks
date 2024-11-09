@@ -24,7 +24,7 @@ export default function TestPage() {
         <div className="flex h-[100px] w-full items-center gap-2">
           <Hero1 className="-mt-[50px]" />
           <Stats />
-          <Spell className="-mt-[20px]" />
+          <Spell className="-mt-[20px] opacity-30" />
         </div>
       </div>
       {/* <div className="text-game-text mt-[130px] flex flex-col gap-4 px-14">

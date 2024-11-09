@@ -6,6 +6,7 @@ export default function Stats() {
       viewBox="0 0 69 33"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="opacity-30"
     >
       <g filter="url(#filter0_d_349_19485)">
         <path
