@@ -143,7 +143,7 @@ mod game {
                     Event::PlayerCreated(
                         PlayerCreated {
                             player,
-                            attack_power: 100,
+                            attack_power: 1,
                             energy_cap: 3000,
                             energy_recovery: 10,
                             attack_level: 1,
