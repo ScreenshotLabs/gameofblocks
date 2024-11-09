@@ -6,7 +6,7 @@ export default function PremiumBuy() {
       viewBox="0 0 210 90"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="mx-auto opacity-70"
+      className="mx-auto opacity-30"
     >
       <g opacity="0.6" filter="url(#filter0_f_377_10983)">
         <path
