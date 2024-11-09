@@ -20,12 +20,18 @@ function Gold({ gold }: { gold: number }) {
   );
 }
 
-export default function TopBar() {
+export default function TopBar({
+  gold,
+  level,
+}: {
+  gold: number;
+  level: number;
+}) {
   return (
     <div className="absolute left-0 top-0 w-full">
       <div className="flex justify-between bg-[#0B1938] p-6">
-        <Gold gold={1268053} />
-        <Level level={1} />
+        <Gold gold={gold} />
+        <Level level={level} />
       </div>
       <GameHeader className="relative" />
     </div>

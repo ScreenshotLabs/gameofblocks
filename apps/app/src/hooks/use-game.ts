@@ -8,11 +8,11 @@ import { useGaslessService } from "./use-gasless-service";
 import useAccount from "./useAccount";
 
 interface ApiResponse {
-  status: 'success';
+  status: "success";
   data: GameDataResult;
 }
 
-export type InitializationStep = 
+export type InitializationStep =
   | "LOADING_INITIAL_DATA"
   | "SPAWNING_PLAYER"
   | "LOADING_PLAYER_DATA"
@@ -29,9 +29,13 @@ export default function useGame() {
   const [gameState, setGameState] = useState<GameState>(GameState.LAUNCHED);
   const [baseBossHealth, setBaseBossHealth] = useState<number | undefined>();
   const [playerGold, setPlayerGold] = useState<number | undefined>();
-  const [currentBossHealth, setCurrentBossHealth] = useState<number | undefined>();
+  const [currentBossHealth, setCurrentBossHealth] = useState<
+    number | undefined
+  >();
   const [isInitializing, setIsInitializing] = useState(false);
-  const [initStep, setInitStep] = useState<InitializationStep>("LOADING_INITIAL_DATA");
+  const [initStep, setInitStep] = useState<InitializationStep>(
+    "LOADING_INITIAL_DATA",
+  );
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["game-data", account?.address],
@@ -42,18 +46,20 @@ export default function useGame() {
         `/api/player?contractAddress=${account.address}`,
         {
           method: "GET",
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`Network response was not ok (status=${response.status})`);
+        throw new Error(
+          `Network response was not ok (status=${response.status})`,
+        );
       }
 
-      const result = await response.json() as ApiResponse;
+      const result = (await response.json()) as ApiResponse;
       return result.data;
     },
     refetchInterval: isInitializing ? 100 : undefined,
-    enabled: !!account
+    enabled: !!account,
   });
 
   const handleAttack = () => {
@@ -61,9 +67,17 @@ export default function useGame() {
       setCurrentBossHealth(
         (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
       );
-      void playerAttack().catch(error => {
+      setPlayerGold(
+        (prevValue) => (prevValue ?? 0) + (data?.player?.attack ?? 1),
+      );
+      void playerAttack().catch((error) => {
         console.error("Attack failed:", error);
-        setCurrentBossHealth(prevValue => (prevValue ?? 0) + (data?.player?.attack ?? 1));
+        setCurrentBossHealth(
+          (prevValue) => (prevValue ?? 0) + (data?.player?.attack ?? 1),
+        );
+        setPlayerGold(
+          (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
+        );
       });
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -92,7 +106,7 @@ export default function useGame() {
         setGameState(GameState.INITIALIZING);
         setIsInitializing(true);
         setInitStep("SPAWNING_PLAYER");
-        
+
         try {
           await spawnPlayer();
           setInitStep("LOADING_PLAYER_DATA");

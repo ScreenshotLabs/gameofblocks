@@ -15,20 +15,20 @@ const loadingMessages = {
   LOADING_INITIAL_DATA: "Loading game data...",
   SPAWNING_PLAYER: "Creating your character...",
   LOADING_PLAYER_DATA: "Loading player data...",
-  READY: "Ready!"
+  READY: "Ready!",
 };
 
 export default function Game(): JSX.Element {
-  const { 
-    gameState, 
-    isLoading, 
-    isServiceWorking, 
-    handleAttack, 
-    boss, 
+  const {
+    gameState,
+    isLoading,
+    isServiceWorking,
+    handleAttack,
+    boss,
     player,
-    initializationStep
+    initializationStep,
   } = useGame();
-  
+
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
@@ -52,10 +52,10 @@ export default function Game(): JSX.Element {
   }
 
   if (
-    isLoading || 
-    gameState !== GameState.INITIALIZED || 
-    !boss || 
-    !player || 
+    isLoading ||
+    gameState !== GameState.INITIALIZED ||
+    !boss ||
+    !player ||
     gameState === GameState.INITIALIZING
   ) {
     return <Loader message={loadingMessages[initializationStep]} />;
@@ -63,7 +63,7 @@ export default function Game(): JSX.Element {
 
   return (
     <>
-      <TopBar />
+      <TopBar gold={player.gold ?? 0} level={boss.level} />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">
         <div className="text-game-text-bright mb-2 text-center font-bold">
           {boss.name}
