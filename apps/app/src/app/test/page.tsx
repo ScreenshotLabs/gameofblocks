@@ -40,7 +40,7 @@ export default function TestPage() {
           onInteraction={() => console.log("onInteraction")}
         />
       </div> */}
-      <BottomBar />
+      <BottomBar isPremium={false} />
     </PageGame>
   );
 }
