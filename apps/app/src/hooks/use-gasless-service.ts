@@ -36,13 +36,15 @@ export const useGaslessService = (params: GaslessServiceParams) => {
     void checkServiceStatusAsync();
   }, [gaslessService]);
 
-  async function playerAttack() {
+  async function playerAttack(numberOfAttacks: number) {
     try {
       if (!gaslessService) {
         throw new Error("Gasless service is not available");
       }
 
-      console.log(`Player ${address} is attacking...`);
+      console.log(
+        `Player ${address} is attacking with ${numberOfAttacks} attacks...`,
+      );
 
       if (!address || !privateKey || !publicKey) {
         throw new Error("Missing account information");
@@ -53,13 +55,11 @@ export const useGaslessService = (params: GaslessServiceParams) => {
         throw new Error("No token prices found.");
       }
 
-      const calls: Call[] = [
-        {
-          entrypoint: "attack_boss",
-          contractAddress: CONTRACT_ADDRESS,
-          calldata: [],
-        },
-      ];
+      const calls: Call[] = Array.from({ length: numberOfAttacks }, () => ({
+        entrypoint: "attack_boss",
+        contractAddress: CONTRACT_ADDRESS,
+        calldata: [],
+      }));
 
       const typedData = await buildTypedData({
         accountAddress: address,

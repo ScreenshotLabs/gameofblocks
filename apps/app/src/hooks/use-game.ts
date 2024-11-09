@@ -1,5 +1,5 @@
 import type { GameDataResult } from "@/types/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BOSSES } from "@/core/constants";
 import { GameState } from "@/types/game";
 import { useQuery } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ export default function useGame() {
   const [gameState, setGameState] = useState<GameState>(GameState.LAUNCHED);
   const [baseBossHealth, setBaseBossHealth] = useState<number | undefined>();
   const [playerGold, setPlayerGold] = useState<number | undefined>();
+  const attacksRef = useRef<number>(0);
   const [currentBossHealth, setCurrentBossHealth] = useState<
     number | undefined
   >();
@@ -63,25 +64,13 @@ export default function useGame() {
   });
 
   const handleAttack = () => {
-    try {
-      setCurrentBossHealth(
-        (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
-      );
-      setPlayerGold(
-        (prevValue) => (prevValue ?? 0) + (data?.player?.attack ?? 1),
-      );
-      void playerAttack().catch((error) => {
-        console.error("Attack failed:", error);
-        setCurrentBossHealth(
-          (prevValue) => (prevValue ?? 0) + (data?.player?.attack ?? 1),
-        );
-        setPlayerGold(
-          (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
-        );
-      });
-    } catch (error) {
-      console.error("Unexpected error:", error);
-    }
+    attacksRef.current += 1;
+    setCurrentBossHealth(
+      (prevValue) => (prevValue ?? 0) - (data?.player?.attack ?? 1),
+    );
+    setPlayerGold(
+      (prevValue) => (prevValue ?? 0) + (data?.player?.attack ?? 1),
+    );
   };
 
   const initializePlayerData = () => {
@@ -94,6 +83,23 @@ export default function useGame() {
     setIsInitializing(false);
     setInitStep("READY");
   };
+  useEffect(() => {
+    if (gameState !== GameState.INITIALIZED) return;
+
+    const intervalId = setInterval(() => {
+      if (attacksRef.current > 0) {
+        try {
+          console.log("tick", attacksRef.current);
+          void playerAttack(attacksRef.current);
+          attacksRef.current = 0;
+        } catch (error) {
+          console.error("Attack failed:", error);
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [gameState]);
 
   useEffect(() => {
     const handleInitialization = async () => {

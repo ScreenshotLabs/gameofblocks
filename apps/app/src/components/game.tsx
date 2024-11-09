@@ -33,6 +33,7 @@ export default function Game(): JSX.Element {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
   const handleBossAttack = async (): Promise<void> => {
+    handleAttack();
     if (!isAnimating) {
       setIsAnimating(true);
       setIsRotating(true);
@@ -40,7 +41,6 @@ export default function Game(): JSX.Element {
         setIsRotating(false);
         setIsAnimating(false);
       }, 300);
-      handleAttack();
     }
     return Promise.resolve();
   };
@@ -51,12 +51,7 @@ export default function Game(): JSX.Element {
     );
   }
 
-  if (
-    isLoading || 
-    !boss || 
-    !player || 
-    gameState !== GameState.INITIALIZED
-  ) {
+  if (isLoading || !boss || !player || gameState !== GameState.INITIALIZED) {
     return <Loader message={loadingMessages[initializationStep]} />;
   }
 
