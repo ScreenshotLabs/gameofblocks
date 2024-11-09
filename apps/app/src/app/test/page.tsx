@@ -12,7 +12,7 @@ import TopBar from "@/components/top-bar";
 export default function TestPage() {
   return (
     <PageGame>
-      <TopBar />
+      <TopBar gold={1} level={2} />
       <div className="flex min-h-screen flex-col pb-[100px] pt-[126px]">
         <div className="">
           <GameBossName name="PEPE THE MAGNIFICENT" />
