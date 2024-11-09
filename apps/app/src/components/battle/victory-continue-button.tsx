@@ -8,7 +8,7 @@ export default function VictoryContinueButton() {
       xmlns="http://www.w3.org/2000/svg"
       className="mx-auto"
     >
-      <g opacity="0.3">
+      <g opacity="1">
         <g opacity="0.6" filter="url(#filter0_f_463_19394)">
           <path
             d="M24 34C24 28.4772 28.4772 24 34 24H176C181.523 24 186 28.4772 186 34V56C186 61.5228 181.523 66 176 66H34C28.4772 66 24 61.5228 24 56V34Z"

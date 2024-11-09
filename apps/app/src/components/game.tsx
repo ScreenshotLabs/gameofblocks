@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import BattleVictory from "@/components/battle/victory";
 import BottomBar from "@/components/bottom-bar";
 import GameBossName from "@/components/game-boss-name";
 import Hero1 from "@/components/heroes/hero-1";
-// import Hero1 from "@/components/heroes/hero-1";
 import Lifebar from "@/components/lifebar";
 import { PageGame } from "@/components/page-game";
 import Spell from "@/components/spell";
@@ -12,9 +12,9 @@ import Stats from "@/components/stats";
 import TopBar from "@/components/top-bar";
 import useGame from "@/hooks/use-game";
 import { GameState } from "@/types/game";
+import { cloudStorage } from "@telegram-apps/sdk-react";
 
 import BossImage from "./boss-animation";
-// import GameFooter from "./game-footer";
 import InteractiveZone from "./interactive-zone";
 import Loader from "./loader";
 
@@ -24,6 +24,8 @@ const loadingMessages = {
   LOADING_PLAYER_DATA: "Loading player data...",
   READY: "Ready!",
 };
+
+const GAME_END = "GAME_END";
 
 export default function Game(): JSX.Element {
   const {
@@ -36,8 +38,26 @@ export default function Game(): JSX.Element {
     initializationStep,
   } = useGame();
 
+  const [isClosed, setIsClosed] = useState<boolean>(false);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+
+  useEffect(() => {
+    void (async () => {
+      const cloudKey = await cloudStorage.getItem(GAME_END);
+      if (cloudKey === "1") {
+        setIsClosed(true);
+      }
+      try {
+        if (boss?.currentHealth && boss.currentHealth <= 0) {
+          await cloudStorage.setItem(GAME_END, "1");
+          console.log('Boss defeated! Health dropped to:', boss.currentHealth);
+        }
+      } catch (error) {
+        console.error('Failed to save game end state:', error);
+      }
+    })();
+  }, [boss?.currentHealth]);
 
   const handleBossAttack = async (): Promise<void> => {
     handleAttack();
@@ -62,47 +82,46 @@ export default function Game(): JSX.Element {
     return <Loader message={loadingMessages[initializationStep]} />;
   }
 
-  if (boss.currentHealth && boss.currentHealth <= 0) {
-    return (
-      <div className="bg-red-500 absolute z-[100] w-full h-full top-0 left-0">
-        test
-      </div>
-    )
-  }
   return (
     <PageGame>
       <TopBar gold={player.gold ?? 0} level={boss.level} />
-      <div
-        className="flex min-h-screen flex-col bg-cover bg-center bg-no-repeat pb-[100px] pt-[126px]"
-        style={{ backgroundImage: "url('/images/background-scene.jpg')" }}
-      >
-        <div className="relative">
-          <GameBossName name={boss.name} />
-          <Lifebar
-            max={boss.baseHealth ?? 1000}
-            value={boss.currentHealth ?? 0}
-          />
+      {boss.currentHealth && boss.currentHealth <= 0 || isClosed ? (
+        <div className="bottom-0 absolute w-full z-[100] overflow-hidden rounded">
+          <BattleVictory />
         </div>
-        <div className="grow">
-          <InteractiveZone
-            playerDamage={player.damage}
-            className="mt-8 h-[300px] w-full"
-            onInteraction={handleBossAttack}
-          >
-            <BossImage
-              isRotating={isRotating}
-              isAnimating={isAnimating}
-              width={200}
-              height={200}
+      ) : (
+        <div
+          className="flex min-h-screen flex-col bg-cover bg-center bg-no-repeat pb-[100px] pt-[126px]"
+          style={{ backgroundImage: "url('/images/background-scene.jpg')" }}
+        >
+          <div className="relative">
+            <GameBossName name={boss.name} />
+            <Lifebar
+              max={boss.baseHealth ?? 1000}
+              value={boss.currentHealth ?? 0}
             />
-          </InteractiveZone>
+          </div>
+          <div className="grow">
+            <InteractiveZone
+              playerDamage={player.damage}
+              className="mt-8 h-[300px] w-full"
+              onInteraction={handleBossAttack}
+            >
+              <BossImage
+                isRotating={isRotating}
+                isAnimating={isAnimating}
+                width={200}
+                height={200}
+              />
+            </InteractiveZone>
+          </div>
+          <div className="flex h-[100px] w-full items-center gap-2">
+            <Hero1 className="-mt-[50px]" />
+            <Stats />
+            <Spell className="-mt-[20px] opacity-30" />
+          </div>
         </div>
-        <div className="flex h-[100px] w-full items-center gap-2">
-          <Hero1 className="-mt-[50px]" />
-          <Stats />
-          <Spell className="-mt-[20px] opacity-30" />
-        </div>
-      </div>
+      )}
       <BottomBar />
     </PageGame>
   );

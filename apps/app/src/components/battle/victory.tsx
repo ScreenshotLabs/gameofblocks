@@ -4,8 +4,9 @@ import VictoryContinueButton from "./victory-continue-button";
 import VictoryLevelsImage from "./victory-levels-image";
 
 export default function BattleVictory() {
+
   return (
-    <div className="bg-[#0C1B3D]">
+    <div className="rounded bg-[#0C1B3D] pb-5 pt-1">
       <PageTitle>Victory!</PageTitle>
       <div className="mb-10 mt-4 text-center leading-5">
         You successfully defeated your enemy!
@@ -17,7 +18,9 @@ export default function BattleVictory() {
         NEW BOSS: BOSSWIFHAT
       </div>
       <LevelBossStats />
-      <VictoryContinueButton />
+      <div className="opacity-30">
+        <VictoryContinueButton />
+      </div>
     </div>
   );
 }

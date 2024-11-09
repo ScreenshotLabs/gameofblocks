@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { VictorySheet } from "@/components/battle/victory-sheet";
-import ClearStorageButton from "@/components/debug/clear-storage-button";
 import { Page } from "@/components/page";
 import PaymentButton from "@/components/payment-button";
 import { Button } from "@/components/ui/button";
