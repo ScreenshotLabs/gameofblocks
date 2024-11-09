@@ -6,7 +6,7 @@ export default function GameFooterBorderless({
   className?: string;
 }) {
   return (
-    <div className={cn("absolute bottom-0 left-0 z-20 w-full", className)}>
+    <div className={cn("absolute -bottom-1 left-0 z-20 w-full", className)}>
       <svg viewBox="0 0 393 86" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0_410_16357)">
           <path

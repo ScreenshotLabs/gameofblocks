@@ -19,7 +19,7 @@ function Level({ level }: { level: number }) {
 function Gold({ gold }: { gold: number }) {
   return (
     <div className="relative flex h-[26px] w-[130px] items-center justify-center rounded-full border border-[#1D3261] bg-[#29437C] font-bold text-[#FFBA08]">
-      <GoldIcon className="absolute left-0 top-0 -ml-[22px] -mt-[16px]" />
+      <GoldIcon className="absolute left-0 top-0 -ml-[10px] -mt-[7px]" />
       <div className="leading-none">{gold}</div>
     </div>
   );
@@ -34,7 +34,7 @@ export default function TopBar({
 }) {
   return (
     <div className="absolute left-0 top-0 z-50 w-full">
-      <div className="flex justify-between bg-[#0B1938] p-6">
+      <div className="flex justify-between bg-[#0B1938] p-4 pb-2">
         <Gold gold={gold} />
         <Level level={level} />
       </div>
