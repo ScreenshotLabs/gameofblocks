@@ -6,7 +6,7 @@ import { PageTitle } from "@/components/page-title";
 import PremiumBuy from "@/components/premium/premium-buy";
 import PremiumImage from "@/components/premium/premium-image";
 
-export default function PremiumPage() {
+export default function AirdropPage() {
   return (
     <Page back>
       <GameHeader />

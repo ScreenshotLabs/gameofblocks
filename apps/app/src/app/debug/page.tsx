@@ -20,9 +20,13 @@ export default function DebugPage() {
           </Link>
         </div>
         <div>Public key: {publicKey}</div>
-
         <PaymentButton />
         <ClearStorageButton />
+        <Link href="/shop">Shop</Link>
+        <Link href="/invite">Invite</Link>
+        <Link href="/premium">Premium</Link>
+        <Link href="/top">Top</Link>
+        <Link href="/airdrop">Airdrop</Link>
       </div>
     </Page>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cloudStorage } from "@telegram-apps/sdk-react";
 
 import { Button } from "../ui/button";
@@ -13,7 +14,8 @@ function ClearStorageButton() {
   };
 
   return (
-    <div className="absolute bottom-0 left-0 z-20 h-10 w-full p-4">
+    <div className="absolute left-0 top-0 z-20 flex h-10 w-full p-4">
+      <Link href="/debug">Debug</Link>
       <Button onClick={clearStorage}>Clear CloudStorage</Button>
     </div>
   );
