@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import useAccount from "@/hooks/useAccount";
 
-export function SheetDemo() {
+function SheetDemo() {
   return (
     <Sheet>
       <SheetTrigger asChild>

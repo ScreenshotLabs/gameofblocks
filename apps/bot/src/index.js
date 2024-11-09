@@ -54,7 +54,7 @@ bot.on("message", function onMessage(msg) {
 
 (async () => {
   const res = await bot.setWebHook(
-    `https://5875-2a01-e0a-d1a-3790-edfa-4355-8ac-3d6e.ngrok-free.app/api/webhook/${process.env.WEBHOOK_SECRET}`
+    `https://gameofblocks-telegram.ngrok.app/api/webhook/${process.env.WEBHOOK_SECRET}`
   );
 
   console.log("res", res);

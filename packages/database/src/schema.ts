@@ -1,8 +1,18 @@
-import { pgTable, varchar, timestamp, bigint, integer, boolean, primaryKey, customType, uuid } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  varchar,
+  timestamp,
+  bigint,
+  integer,
+  boolean,
+  primaryKey,
+  customType,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 const int8range = customType<{ data: string; driverData: string }>({
   dataType() {
-    return 'int8range';
+    return "int8range";
   },
 });
 
@@ -41,4 +51,14 @@ export const playerBosses = pgTable("player_bosses", {
   isDefeated: boolean("is_defeated").notNull(),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
   _cursor: int8range("_cursor").notNull(),
+});
+
+export const payments = pgTable("payments", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  telegramUserId: varchar("telegram_user_id").notNull(),
+  amount: integer("amount").notNull(),
+  currency: varchar("currency").notNull(),
+  telegramPaymentChargeId: varchar("telegram_payment_charge_id").notNull(),
+  providerPaymentChargeId: varchar("provider_payment_charge_id").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });

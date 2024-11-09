@@ -1,4 +1,29 @@
+"use client";
+
+import type { PaymentResponse } from "@/types/api";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { openInvoice } from "@telegram-apps/sdk-react";
+
 export default function PremiumBuy() {
+  const [invoiceStatus, setInvoiceStatus] = useState<string>();
+  const router = useRouter();
+
+  async function buy() {
+    const response = await fetch("/api/payment", {
+      method: "POST",
+    });
+    const { slug } = (await response.json()) as PaymentResponse;
+    const invoiceStatus = await openInvoice(slug);
+    setInvoiceStatus(invoiceStatus);
+  }
+
+  useEffect(() => {
+    if (invoiceStatus === "paid") {
+      router.push("/");
+    }
+  }, [invoiceStatus, router]);
+
   return (
     <svg
       width="210"
@@ -6,7 +31,8 @@ export default function PremiumBuy() {
       viewBox="0 0 210 90"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="mx-auto opacity-30"
+      className="mx-auto cursor-pointer"
+      onClick={buy}
     >
       <g opacity="0.6" filter="url(#filter0_f_377_10983)">
         <path
