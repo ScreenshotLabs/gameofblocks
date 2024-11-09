@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
       const payment = await db
         .select()
         .from(payments)
-        .where(eq(payments.telegramId, telegramId))
+        .where(eq(payments.telegramUserId, telegramId))
         .limit(1);
 
       isPremium = payment.length > 0;
