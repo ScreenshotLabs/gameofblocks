@@ -13,6 +13,8 @@ import TopBar from "./top-bar";
 
 export default function Game(): JSX.Element {
   const { gameState, isServiceWorking, handleAttack, boss, player } = useGame();
+  console.log("boss", boss);
+  console.log("player", player);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
@@ -26,7 +28,7 @@ export default function Game(): JSX.Element {
         setIsRotating(false);
         setIsAnimating(false);
       }, 300);
-      await handleAttack();
+      handleAttack();
     }
     return Promise.resolve();
   };
@@ -50,16 +52,16 @@ export default function Game(): JSX.Element {
       <TopBar />
       <div className="text-game-text flex flex-col gap-4 px-14 py-10">
         <div className="text-game-text-bright mb-2 text-center font-bold">
-          {boss.name}
+          {boss?.name}
         </div>
         <div className="flex justify-center">
           <Lifebar
-            max={boss.baseHealth ?? 1000}
-            value={boss.currentHealth ?? 0}
+            max={boss?.baseHealth ?? 1000}
+            value={boss?.currentHealth ?? 0}
           />
         </div>
         <InteractiveZone
-          playerDamage={player.damage}
+          playerDamage={player?.damage ?? 1}
           className="h-[400px] w-full"
           onInteraction={handleBossAttack}
         >
