@@ -64,7 +64,7 @@ export default function Game(): JSX.Element {
 
   return (
     <PageGame>
-      <TopBar gold={1} level={2} />
+      <TopBar gold={player.gold ?? 0} level={boss.level} />
       <div
         className="flex min-h-screen flex-col bg-cover bg-center bg-no-repeat pb-[100px] pt-[126px]"
         style={{ backgroundImage: "url('/images/background-scene.jpg')" }}
